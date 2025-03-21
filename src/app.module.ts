@@ -8,6 +8,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ClsModule } from 'nestjs-cls';
 import { Request } from 'express';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { Request } from 'express';
         },
       },
     }),
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],

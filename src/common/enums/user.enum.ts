@@ -1,4 +1,4 @@
 export enum UserType {
-    INDIVIDUAL = "individual",
-    LEGAL_ENTITY = "legal_entity"
+    INDIVIDUAL = "INDIVIDUAL",
+    LEGAL_ENTITY = "LEGAL_ENTITY" 
 }

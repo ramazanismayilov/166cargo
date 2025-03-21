@@ -10,6 +10,7 @@ import {
 } from "typeorm";
 import { UserEntity } from "./User.entity";
 import { Gender } from "src/common/enums/gender.enum";
+import { Nationality } from "src/common/enums/nationality.enum";
 
 @Entity('profile')
 export class ProfileEntity extends BaseEntity {
@@ -25,8 +26,11 @@ export class ProfileEntity extends BaseEntity {
     @Column({ type: 'enum', enum: Gender, default: Gender.MALE })
     gender: Gender
 
-    @Column({ type: 'date', nullable: true })
+    @Column()
     birthDate: Date
+
+    @Column({ type: 'enum', enum: Nationality, default: Nationality.AZERBAIJAN })
+    nationality: Nationality.AZERBAIJAN
 
     @Column()
     address: string

@@ -11,7 +11,6 @@ import {
 } from "typeorm";
 import * as bcrypt from 'bcrypt';
 import { ProfileEntity } from "./Profile.entity";
-import { Phone } from "src/common/enums/phone.enum";
 import { UserType } from "src/common/enums/user.enum";
 
 @Entity('user')
@@ -42,9 +41,6 @@ export class UserEntity extends BaseEntity {
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     loginDate: Date
-
-    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-    lastActive: Date
 
     @Column({ type: 'enum', enum: UserType, default: UserType.INDIVIDUAL })
     userType: UserType;
