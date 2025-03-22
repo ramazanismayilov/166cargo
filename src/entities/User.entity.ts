@@ -12,6 +12,7 @@ import {
 import * as bcrypt from 'bcrypt';
 import { ProfileEntity } from "./Profile.entity";
 import { UserType } from "src/common/enums/user.enum";
+import { PhonePrefix } from "src/common/enums/phone.enum";
 
 @Entity('user')
 export class UserEntity extends BaseEntity {
@@ -23,6 +24,9 @@ export class UserEntity extends BaseEntity {
 
     @Column()
     password: string
+
+    @Column({ type: 'enum', enum: PhonePrefix, default: PhonePrefix.P010 })
+    phonePrefix: PhonePrefix;
 
     @Column()
     phone: string

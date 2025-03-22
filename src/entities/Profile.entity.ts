@@ -7,10 +7,12 @@ import {
     UpdateDateColumn,
     CreateDateColumn,
     PrimaryGeneratedColumn,
+    ManyToOne,
 } from "typeorm";
 import { UserEntity } from "./User.entity";
 import { Gender } from "src/common/enums/gender.enum";
 import { Nationality } from "src/common/enums/nationality.enum";
+import { StationEntity } from "./Station.entity";
 
 @Entity('profile')
 export class ProfileEntity extends BaseEntity {
@@ -35,8 +37,8 @@ export class ProfileEntity extends BaseEntity {
     @Column()
     address: string
 
-    @Column()
-    station: string
+    @ManyToOne(() => StationEntity, { onDelete: 'SET NULL' })
+    station: StationEntity;
 
     @Column({ nullable: true })
     coupon: string

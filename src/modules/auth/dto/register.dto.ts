@@ -1,7 +1,8 @@
 import { Type } from "class-transformer";
-import { IsDate, IsEmail, IsEnum, IsOptional, IsString, Length, ValidateIf } from "class-validator";
+import { IsDate, IsEmail, IsEnum, IsNumber, IsOptional, IsString, Length, ValidateIf } from "class-validator";
 import { Gender } from "src/common/enums/gender.enum";
 import { Nationality } from "src/common/enums/nationality.enum";
+import { PhonePrefix } from "src/common/enums/phone.enum";
 import { UserType } from "src/common/enums/user.enum";
 
 export class RegisterDto {
@@ -18,6 +19,10 @@ export class RegisterDto {
     @IsString()
     @IsEmail()
     email?: string
+
+    @Type()
+    @IsEnum(PhonePrefix)
+    phonePrefix: PhonePrefix
 
     @Type()
     @IsOptional()
@@ -50,8 +55,8 @@ export class RegisterDto {
     idFinCode: string
 
     @Type()
-    @IsString()
-    station: string
+    @IsNumber()
+    stationId: number
 
     @Type()
     @IsString()

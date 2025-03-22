@@ -9,6 +9,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { ClsModule } from 'nestjs-cls';
 import { Request } from 'express';
 import { AuthModule } from './modules/auth/auth.module';
+import { StationModule } from './modules/station/station.module';
 
 @Module({
   imports: [
@@ -50,7 +51,8 @@ import { AuthModule } from './modules/auth/auth.module';
         },
       },
     }),
-    AuthModule
+    AuthModule,
+    StationModule
   ],
   controllers: [AppController],
   providers: [AppService],
