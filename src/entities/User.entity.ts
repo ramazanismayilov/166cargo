@@ -2,21 +2,17 @@ import {
     Column,
     Entity,
     OneToOne,
-    BaseEntity,
-    BeforeInsert,
-    BeforeUpdate,
     UpdateDateColumn,
     CreateDateColumn,
     PrimaryGeneratedColumn,
 } from "typeorm";
-import * as bcrypt from 'bcrypt';
 import { ProfileEntity } from "./Profile.entity";
-import { UserType } from "src/common/enums/user.enum";
+import { UserRole, UserType } from "src/common/enums/user.enum";
 import { PhonePrefix } from "src/common/enums/phone.enum";
-import { IdSerialNumber } from "src/common/enums/idSerialNumber.enum";
+import { IdSerialPrefix } from "src/common/enums/idSerialNumber.enum";
 
 @Entity('user')
-export class UserEntity extends BaseEntity {
+export class UserEntity {
     @PrimaryGeneratedColumn()
     id: number
 
@@ -32,8 +28,11 @@ export class UserEntity extends BaseEntity {
     @Column()
     phone: string
 
-    @Column({ type: 'enum', enum: IdSerialNumber, default: IdSerialNumber.AA })
-    idSerialNumber: IdSerialNumber
+    @Column({ type: 'enum', enum: IdSerialPrefix, default: IdSerialPrefix.AA })
+    idSerialPrefix: IdSerialPrefix
+
+    @Column({ unique: true })
+    idSerialNumber: string
 
     @Column({ unique: true })
     idFinCode: string
@@ -53,6 +52,9 @@ export class UserEntity extends BaseEntity {
     @Column({ nullable: true })
     voen: string;
 
+    @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
+    role: UserRole;
+
     @OneToOne(() => ProfileEntity, (profile) => profile.user, { cascade: true })
     profile: ProfileEntity;
 
@@ -61,12 +63,4 @@ export class UserEntity extends BaseEntity {
 
     @UpdateDateColumn()
     updatedAt: Date;
-
-    @BeforeInsert()
-    @BeforeUpdate()
-    async beforeUpsert() {
-        if (this.password) {
-            this.password = await bcrypt.hash(this.password, 10)
-        }
-    }
 }

@@ -3,6 +3,7 @@ import { AddStationDto } from "./dto/addStation.dto";
 import { StationService } from "./station.service";
 import { UpdateStationDto } from "./dto/updateStation.dto";
 import { Auth } from "src/common/decorators/auth.decorator";
+import { UserRole } from "src/common/enums/user.enum";
 
 @Controller('stations')
 export class StationController {
@@ -14,19 +15,19 @@ export class StationController {
     }
 
     @Post()
-    @Auth()
+    @Auth(UserRole.ADMIN)
     addStation(@Body() body: AddStationDto) {
         return this.stationService.addStation(body)
     }
 
     @Post(':id')
-    @Auth()
+    @Auth(UserRole.ADMIN)
     updateStation(@Param('id') id: number, @Body() body: UpdateStationDto) {
         return this.stationService.updateStation(id, body)
     }
 
     @Delete(':id')
-    @Auth()
+    @Auth(UserRole.ADMIN)
     deleteStation(@Param('id') id: number) {
         return this.stationService.deleteStation(id)
     }

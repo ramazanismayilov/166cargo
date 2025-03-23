@@ -13,6 +13,7 @@ import { generateCustomerNumber } from "src/common/utils/customerNumber.utils";
 import { ResetPasswordDto } from "./dto/reset-password.dto";
 import { ClsService } from "nestjs-cls";
 import { MailerService } from "@nestjs-modules/mailer";
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -31,18 +32,14 @@ export class AuthService {
 
     async login(params: LoginDto) {
         let user = await this.userRepo.findOne({ where: { email: params.email } });
-
         if (!user) throw new UnauthorizedException('Username or password is wrong');
 
         if (user.logout) {
             user.logout = false;
             await this.userRepo.save(user);
         }
-        console.log(params.password);
-        console.log(user.password);
 
         let checkPassword = await compare(params.password, user.password);
-        console.log(checkPassword);
         if (!checkPassword) throw new UnauthorizedException('Username or password is wrong');
 
         let token = this.jwt.sign({ userId: user.id });
@@ -59,12 +56,15 @@ export class AuthService {
 
         validatePasswords(params.password, params.repeatPassword);
         validateUserType(params.userType, params.voen);
-        validateNationality(params.nationality, params.idSerialNumber);
+        validateNationality(params.nationality, params.idSerialPrefix);
+
+        const hashedPassword = await bcrypt.hash(params.password, 10);
 
         const user = this.userRepo.create({
             email: params.email,
-            password: params.password,
+            password: hashedPassword,
             phone: params.phone,
+            idSerialNumber: params.idSerialNumber,
             idFinCode: params.idFinCode,
             customerNumber: generateCustomerNumber(),
             loginDate: new Date(),
@@ -81,7 +81,7 @@ export class AuthService {
             }
         });
 
-        await user.save();
+        await this.userRepo.save(user)
         if (params.email) {
             await this.mailer.sendMail({
                 to: params.email,
@@ -99,7 +99,7 @@ export class AuthService {
         let user = this.cls.get<UserEntity>('user')
         if (user) {
             user.logout = true
-            await this.userRepo.save(user)
+            await this.userRepo.update(user.id, { logout: true });
         }
         return { message: 'Successfully logged out' };
     }
@@ -113,9 +113,10 @@ export class AuthService {
         let checkPassword = await compare(params.currentPassword, user.password);
         if (!checkPassword) throw new BadRequestException('Current password is wrong');
 
-        user.password = params.newPassword;
+        const hashedPassword = await bcrypt.hash(params.newPassword, 10);
+        user.password = hashedPassword;
 
-        await user.save();
+        await this.userRepo.save(user)
         return { message: 'Password is updated successfully' };
     }
 }

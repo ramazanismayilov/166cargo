@@ -1,7 +1,7 @@
 import { Type } from "class-transformer";
 import { IsDate, IsEmail, IsEnum, IsNumber, IsOptional, IsString, Length } from "class-validator";
 import { Gender } from "src/common/enums/gender.enum";
-import { IdSerialNumber } from "src/common/enums/idSerialNumber.enum";
+import { IdSerialPrefix } from "src/common/enums/idSerialNumber.enum";
 import { Nationality } from "src/common/enums/nationality.enum";
 import { PhonePrefix } from "src/common/enums/phone.enum";
 import { UserType } from "src/common/enums/user.enum";
@@ -46,8 +46,13 @@ export class RegisterDto {
     userType: UserType
 
     @Type()
-    @IsEnum(IdSerialNumber)
-    idSerialNumber: IdSerialNumber
+    @IsEnum(IdSerialPrefix)
+    idSerialPrefix: IdSerialPrefix
+
+    @Type()
+    @IsString()
+    @Length(7, 7)
+    idSerialNumber: string
 
     @Type()
     @IsString()

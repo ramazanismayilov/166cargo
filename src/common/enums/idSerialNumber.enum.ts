@@ -1,4 +1,4 @@
-export enum IdSerialNumber {
+export enum IdSerialPrefix {
     AA = "AA",
     AZE = "AZE",
     MYI = "MYI",

@@ -1,7 +1,7 @@
 import { BadRequestException } from "@nestjs/common";
 import { UserType } from "../enums/user.enum";
 import { Nationality } from "../enums/nationality.enum";
-import { IdSerialNumber } from "../enums/idSerialNumber.enum";
+import { IdSerialPrefix } from "../enums/idSerialNumber.enum";
 
 export function validatePasswords(password: string, repeatPassword: string) {
     if (password !== repeatPassword) {
@@ -15,14 +15,14 @@ export function validateUserType(userType: UserType, voen?: string) {
     }
 }
 
-export function validateNationality(nationality: Nationality, idSerialNumber: string) {
+export function validateNationality(nationality: Nationality, idSerialPrefix: string) {
     if (nationality === Nationality.AZERBAIJAN) {
-        if (idSerialNumber !== IdSerialNumber.AA && idSerialNumber !== IdSerialNumber.AZE) {
-            throw new BadRequestException('ID Serial Number must be either AA or AZE for Azerbaijani nationality');
+        if (idSerialPrefix !== IdSerialPrefix.AA && idSerialPrefix !== IdSerialPrefix.AZE) {
+            throw new BadRequestException('ID Serial Prefix must be either AA or AZE for Azerbaijani nationality');
         }
     } else {
-        if (idSerialNumber !== IdSerialNumber.MYI && idSerialNumber !== IdSerialNumber.DYI) {
-            throw new BadRequestException('ID Serial Number must be either MYI or DYI for foreign citizens');
+        if (idSerialPrefix !== IdSerialPrefix.MYI && idSerialPrefix !== IdSerialPrefix.DYI) {
+            throw new BadRequestException('ID Serial Prefix must be either MYI or DYI for foreign citizens');
         }
     }
 }

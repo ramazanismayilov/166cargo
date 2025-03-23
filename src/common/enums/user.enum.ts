@@ -4,6 +4,6 @@ export enum UserType {
 }
 
 export enum UserRole {
-    ADMIN = "ADMIN",
-    USER = "USER"
+    USER = "USER",
+    ADMIN = "ADMIN"
 }
