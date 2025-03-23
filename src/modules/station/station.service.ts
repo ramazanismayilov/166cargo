@@ -15,7 +15,7 @@ export class StationService {
     }
 
     async allStations() {
-        const stations = await this.stationRepo.find()
+        const stations = await this.stationRepo.find({ order: { id: 'ASC' } })
         if (stations.length === 0) throw new NotFoundException('Stations not found');
 
         return stations

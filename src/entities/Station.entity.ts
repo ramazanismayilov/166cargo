@@ -16,6 +16,21 @@ export class StationEntity {
     @Column()
     name: string
 
+    @Column()
+    address: string;
+
+    @Column()
+    workWeekdays: string;
+
+    @Column()
+    workSaturday: string;
+
+    @Column()
+    workSunday: string;
+
+    @Column()
+    phone: string;
+
     @OneToMany(() => ProfileEntity, (profile) => profile.station)
     profiles: ProfileEntity[];
 

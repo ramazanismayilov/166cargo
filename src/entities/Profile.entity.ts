@@ -3,7 +3,6 @@ import {
     Entity,
     OneToOne,
     JoinColumn,
-    BaseEntity,
     UpdateDateColumn,
     CreateDateColumn,
     PrimaryGeneratedColumn,
@@ -37,7 +36,7 @@ export class ProfileEntity {
     @Column()
     address: string
 
-    @ManyToOne(() => StationEntity, { onDelete: 'SET NULL' })
+    @ManyToOne(() => StationEntity, { onDelete: 'SET NULL', nullable: true })
     station: StationEntity;
 
     @Column({ nullable: true })
