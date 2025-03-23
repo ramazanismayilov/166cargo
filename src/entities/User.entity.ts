@@ -13,6 +13,7 @@ import * as bcrypt from 'bcrypt';
 import { ProfileEntity } from "./Profile.entity";
 import { UserType } from "src/common/enums/user.enum";
 import { PhonePrefix } from "src/common/enums/phone.enum";
+import { IdSerialNumber } from "src/common/enums/idSerialNumber.enum";
 
 @Entity('user')
 export class UserEntity extends BaseEntity {
@@ -31,14 +32,14 @@ export class UserEntity extends BaseEntity {
     @Column()
     phone: string
 
-    @Column({ unique: true })
-    idSerialNumber: string
+    @Column({ type: 'enum', enum: IdSerialNumber, default: IdSerialNumber.AA })
+    idSerialNumber: IdSerialNumber
 
     @Column({ unique: true })
     idFinCode: string
 
-    @Column('uuid')
-    customerNumber: string
+    @Column()
+    customerNumber: number
 
     @Column({ default: false })
     logout: boolean

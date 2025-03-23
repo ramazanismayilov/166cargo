@@ -1,6 +1,7 @@
 import { Type } from "class-transformer";
-import { IsDate, IsEmail, IsEnum, IsNumber, IsOptional, IsString, Length, ValidateIf } from "class-validator";
+import { IsDate, IsEmail, IsEnum, IsNumber, IsOptional, IsString, Length } from "class-validator";
 import { Gender } from "src/common/enums/gender.enum";
+import { IdSerialNumber } from "src/common/enums/idSerialNumber.enum";
 import { Nationality } from "src/common/enums/nationality.enum";
 import { PhonePrefix } from "src/common/enums/phone.enum";
 import { UserType } from "src/common/enums/user.enum";
@@ -15,20 +16,18 @@ export class RegisterDto {
     lastName: string
 
     @Type()
-    @IsOptional()
     @IsString()
     @IsEmail()
-    email?: string
+    email: string
 
     @Type()
     @IsEnum(PhonePrefix)
     phonePrefix: PhonePrefix
 
     @Type()
-    @IsOptional()
     @IsString()
-    @Length(6, 15)
-    phone?: string
+    @Length(7, 7)
+    phone: string
 
     @Type()
     @IsEnum(Gender)
@@ -47,8 +46,8 @@ export class RegisterDto {
     userType: UserType
 
     @Type()
-    @IsString()
-    idSerialNumber: string
+    @IsEnum(IdSerialNumber)
+    idSerialNumber: IdSerialNumber
 
     @Type()
     @IsString()
@@ -67,8 +66,9 @@ export class RegisterDto {
     @Length(6, 12)
     password: string;
 
-    @ValidateIf((o) => o.password !== o.repeatPassword)
-    @IsString({ message: "Passwords do not match" })
+    @Type()
+    @IsString()
+    @Length(6, 12)
     repeatPassword: string;
 
     @Type()

@@ -3,13 +3,16 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { join } from 'path';
+import { join, resolve } from 'path';
 import { JwtModule } from '@nestjs/jwt';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ClsModule } from 'nestjs-cls';
 import { Request } from 'express';
 import { AuthModule } from './modules/auth/auth.module';
 import { StationModule } from './modules/station/station.module';
+import { UserModule } from './modules/user/user.module';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 
 @Module({
   imports: [
@@ -51,7 +54,36 @@ import { StationModule } from './modules/station/station.module';
         },
       },
     }),
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory(config: ConfigService) {
+        return {
+          transport: {
+            service: 'gmail',
+            host: config.get('SMTP_HOST'),
+            port: config.get('SMTP_PORT'),
+            secure: config.get('SMTP_SECURE'),
+            auth: {
+              user: config.get('SMTP_USER'),
+              pass: config.get('SMTP_PASSWORD'),
+            },
+          },
+          defaults: {
+            from: `"166 Cargo" <${config.get('SMTP_FROM')}>`,
+          },
+          template: {
+            dir: join(__dirname, '..', 'src', 'templates'),
+            adapter: new HandlebarsAdapter(),
+            options: {
+              strict: true,
+            },
+          },
+        };
+      },
+    }),
     AuthModule,
+    UserModule,
     StationModule
   ],
   controllers: [AppController],
