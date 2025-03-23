@@ -4,6 +4,8 @@ import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
 import { ResetPasswordDto } from "./dto/reset-password.dto";
 import { Auth } from "src/common/decorators/auth.decorator";
+import { CreateForgetPasswordDto } from "./dto/create-forget-password.dto";
+import { ConfirmForgetPaswordDto } from "./dto/confirm-forget-password.dto";
 
 @Controller('auth')
 export class AuthController {
@@ -29,5 +31,15 @@ export class AuthController {
     @Auth()
     resetPassword(@Body() body: ResetPasswordDto) {
         return this.authService.resetPassword(body)
+    }
+
+    @Post('forget-password')
+    createForgetPasswordRequest(@Body() body: CreateForgetPasswordDto) {
+        return this.authService.createForgetPasswordRequest(body)
+    }
+
+    @Post('forget-password/confirm')
+    confirmPassword(@Body() body: ConfirmForgetPaswordDto) {
+        return this.authService.confirmForgetPassword(body);
     }
 }

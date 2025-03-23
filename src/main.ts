@@ -25,6 +25,7 @@ async function bootstrap() {
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('', app, documentFactory, {
+    // customCssUrl: `/swagger.dark.css`,
     swaggerOptions: {
       persistAuthorization: true
     }

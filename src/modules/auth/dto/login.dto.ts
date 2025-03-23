@@ -1,12 +1,11 @@
 import { Type } from "class-transformer";
-import { IsEmail, IsOptional, IsString, Length } from "class-validator";
+import { IsEmail, IsString, Length } from "class-validator";
 
 export class LoginDto {
     @Type()
-    @IsOptional()
     @IsString()
     @IsEmail()
-    email?: string
+    email: string
 
     @Type()
     @IsString()

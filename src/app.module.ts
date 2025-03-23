@@ -13,10 +13,11 @@ import { StationModule } from './modules/station/station.module';
 import { UserModule } from './modules/user/user.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { UploadModule } from './modules/upload/upload.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -84,7 +85,8 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
     }),
     AuthModule,
     UserModule,
-    StationModule
+    StationModule,
+    UploadModule
   ],
   controllers: [AppController],
   providers: [AppService],

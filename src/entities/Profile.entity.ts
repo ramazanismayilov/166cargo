@@ -15,7 +15,7 @@ import { Nationality } from "src/common/enums/nationality.enum";
 import { StationEntity } from "./Station.entity";
 
 @Entity('profile')
-export class ProfileEntity extends BaseEntity {
+export class ProfileEntity {
     @PrimaryGeneratedColumn()
     id: number
 
