@@ -36,7 +36,7 @@ export class StationService {
         if (!station) throw new NotFoundException({ message: 'Station not found' });
 
         station.name = params.name;
-        await this.stationRepo.save(station);
+        await this.stationRepo.update(id, station);
         return { message: "Station updated successfully", station };
     }
 

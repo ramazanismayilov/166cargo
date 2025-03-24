@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { ImageEntity } from './Image.entity';
 
 @Entity('news')
@@ -6,8 +6,12 @@ export class NewsEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => ImageEntity, { onDelete: 'SET NULL', nullable: true })
-    image: ImageEntity;
+    @OneToOne(() => ImageEntity, { onDelete: 'SET NULL' })
+    @JoinColumn({
+        name: 'imageId',
+        referencedColumnName: 'id',
+    })
+    image: ImageEntity | null;
 
     @Column()
     title: string;

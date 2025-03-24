@@ -1,9 +1,9 @@
-import { NewsBaseDto } from "./stationBase.dto";
 import { IsOptional } from "class-validator";
+import { NewsBaseDto } from "./newsBase.dto";
 
-export class UpdateStationDto extends NewsBaseDto {
+export class UpdateNewsDto extends NewsBaseDto {
     @IsOptional()
-    image: string;
+    imageId: string;
 
     @IsOptional()
     title: string;

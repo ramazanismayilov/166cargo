@@ -1,11 +1,12 @@
 import { Type } from "class-transformer";
-import { IsString, IsNotEmpty } from "class-validator";
+import { IsString, IsNotEmpty, IsUUID } from "class-validator";
 
 export class NewsBaseDto {
     @Type()
     @IsString()
     @IsNotEmpty()
-    image: string;
+    @IsUUID('4', { each: true })
+    imageId: string;
 
     @Type()
     @IsString()
