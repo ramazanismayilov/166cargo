@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsEmail, IsOptional, IsString, Length } from "class-validator";
+import { IsString, Length } from "class-validator";
 
 export class ResetPasswordDto {
     @Type()

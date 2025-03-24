@@ -25,7 +25,7 @@ export class UserEntity {
     @Column({ type: 'enum', enum: PhonePrefix, default: PhonePrefix.P010 })
     phonePrefix: PhonePrefix;
 
-    @Column()
+    @Column({ unique: true })
     phone: string
 
     @Column({ type: 'enum', enum: IdSerialPrefix, default: IdSerialPrefix.AA })

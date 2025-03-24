@@ -18,6 +18,7 @@ import { UserActivationEntity } from "src/entities/UserActivation.entity";
 import { addMinutes } from "date-fns";
 import { CreateForgetPasswordDto } from "./dto/create-forget-password.dto";
 import { ConfirmForgetPaswordDto } from "./dto/confirm-forget-password.dto";
+import { checkUniqueFields } from "src/common/utils/user.utils";
 
 @Injectable()
 export class AuthService {
@@ -54,8 +55,7 @@ export class AuthService {
     }
 
     async register(params: RegisterDto) {
-        const userExists = await this.userRepo.findOne({ where: { email: params.email } });
-        if (userExists) throw new ConflictException('User already exists');
+        await checkUniqueFields(this.userRepo, params);
 
         const station = await this.stationRepo.findOne({ where: { id: params.stationId } });
         if (!station) throw new NotFoundException('Station not found');

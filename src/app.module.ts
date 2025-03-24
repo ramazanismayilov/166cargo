@@ -3,7 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { join, resolve } from 'path';
+import { join } from 'path';
 import { JwtModule } from '@nestjs/jwt';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ClsModule } from 'nestjs-cls';
@@ -15,6 +15,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { UploadModule } from './modules/upload/upload.module';
 import { NewsModule } from './modules/news/news.module';
+import { TariffModule } from './modules/tariff/tariff.module';
 
 @Module({
   imports: [
@@ -88,7 +89,8 @@ import { NewsModule } from './modules/news/news.module';
     UserModule,
     StationModule,
     UploadModule,
-    NewsModule
+    NewsModule,
+    TariffModule
   ],
   controllers: [AppController],
   providers: [AppService],
