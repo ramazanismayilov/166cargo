@@ -23,4 +23,13 @@ export class TariffEntity {
 
     @Column('float')
     priceLocal: number;
+
+    @Column('float')
+    width: number;
+
+    @Column('float')
+    height: number;
+
+    @Column('float')
+    length: number;
 }

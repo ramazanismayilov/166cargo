@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectDataSource } from "@nestjs/typeorm";
 import { TariffEntity } from "src/entities/Tariff.entity";
 import { DataSource, Repository } from "typeorm";
@@ -17,57 +17,102 @@ export class TariffService {
         this.tariffRepo = this.dataSource.getRepository(TariffEntity)
     }
 
-    async allTariffs() { }
+    async allTaariffs() {
+        const taariffs = await this.tariffRepo.find({ order: { id: 'ASC' } })
+        if (taariffs.length === 0) throw new NotFoundException('Taariffs not found');
+
+        return taariffs
+    }
 
     async addTariff(params: AddTariffDto) {
         const { width, height, length, country } = params;
         const volumetricWeight = (width * height * length) / 6000;
 
         let countryTariff: number;
-        let calculatedPriceUSD: number = 0;
-        let calculatedPricePoundSterling: number = 0;
+        let calculatedPriceUSD = 0;
+        let calculatedPriceGBP = 0;
         let calculatedPriceLocal = 0;
+        let exchangeRateUSD = 1.70;
+        let exchangeRateGBP = 2.50;
 
-        switch (country) {
-            case TariffCountry.TURKEY:
-                countryTariff = 0.66;
-                calculatedPriceUSD = volumetricWeight * countryTariff;
-                calculatedPriceLocal = calculatedPriceUSD * 1.70
-                break;
-            case TariffCountry.ENGLAND:
-                countryTariff = 2.90;
-                calculatedPricePoundSterling = volumetricWeight * countryTariff;
-                calculatedPriceLocal = calculatedPricePoundSterling * 2.50
-                break;
-            case TariffCountry.USA:
-                countryTariff = 2.66;
-                calculatedPriceUSD = volumetricWeight * countryTariff;
-                calculatedPriceLocal = calculatedPriceUSD * 1.70
-                break;
+        if (width >= 60 || height >= 60 || length >= 60) {
+            switch (country) {
+                case TariffCountry.TURKEY:
+                    countryTariff = 0.66;
+                    calculatedPriceUSD = volumetricWeight * countryTariff;
+                    calculatedPriceGBP = 0;
+                    calculatedPriceLocal = calculatedPriceUSD * exchangeRateUSD;
+                    break;
+                case TariffCountry.ENGLAND:
+                    countryTariff = 2.90;
+                    calculatedPriceGBP = volumetricWeight * countryTariff;
+                    calculatedPriceUSD = 0;
+                    calculatedPriceLocal = calculatedPriceGBP * exchangeRateGBP;
+                    break;
+                case TariffCountry.USA:
+                    countryTariff = 2.66;
+                    calculatedPriceUSD = volumetricWeight * countryTariff;
+                    calculatedPriceGBP = 0;
+                    calculatedPriceLocal = calculatedPriceUSD * exchangeRateUSD;
+                    break;
+            }
+
+            const tariff = this.tariffRepo.create({
+                weightRangeStart: volumetricWeight,
+                weightRangeEnd: volumetricWeight + 0.25,
+                priceUSD: calculatedPriceUSD,
+                priceGBP: calculatedPriceGBP,
+                priceLocal: calculatedPriceLocal,
+                width,
+                height,
+                length
+            });
+
+            await this.tariffRepo.save(tariff);
+
+            return {
+                message: 'Tariff created successfully',
+                tariff,
+            };
+        } else {
+            if (volumetricWeight >= 0 && volumetricWeight <= 0.250) {
+                switch (country) {
+                    case TariffCountry.TURKEY:
+                        calculatedPriceUSD = 0.66;
+                        calculatedPriceLocal = 1.12;
+                        break;
+                    case TariffCountry.ENGLAND:
+                        calculatedPriceGBP = 2.90;
+                        calculatedPriceLocal = 6.41;
+                        break;
+                    case TariffCountry.USA:
+                        calculatedPriceUSD = 2.66;
+                        calculatedPriceLocal = 4.52;
+                        break;
+                }
+
+                const tariff = this.tariffRepo.create({
+                    weightRangeStart: 0,
+                    weightRangeEnd: 0.250,
+                    priceUSD: calculatedPriceUSD,
+                    priceGBP: 0,
+                    priceLocal: calculatedPriceLocal,
+                    width,
+                    height,
+                    length
+                });
+
+                await this.tariffRepo.save(tariff);
+
+                return {
+                    message: 'Tariff created successfully',
+                    tariff,
+                };
+            }
         }
-
-        // Çəki aralığının hesablanması (aralıq nömrəsi olaraq istifadə edilə bilər)
-        const weightRangeStart = volumetricWeight;
-        const weightRangeEnd = weightRangeStart + 1;  // Nümunə olaraq bir vahid artırırıq
-
-        // Tariff məlumatlarının yaradılması və DB-ə əlavə edilməsi
-        const tariff = this.tariffRepo.create({
-            weightRangeStart,
-            weightRangeEnd,
-            priceUSD: calculatedPriceUSD,
-            priceGBP: calculatedPricePoundSterling,
-            priceLocal: calculatedPriceLocal,  // Yerli qiymət lazım olsa əlavə edilə bilər
-        });
-
-        // Tariff məlumatını bazaya əlavə edirik
-        await this.tariffRepo.save(tariff);
-
-        // Uğurlu nəticəni qaytarırıq
-        return {
-            message: 'Tariff created successfully',
-            tariff,
-        };
     }
+
+
 
     async updateTariff(params: UpdateTariffDto) { }
     async deleteTariff(tariffId: number) { }
