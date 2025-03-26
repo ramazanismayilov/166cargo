@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
 import { TariffService } from "./tariff.service";
 import { Auth } from "src/common/decorators/auth.decorator";
 import { UserRole } from "src/common/enums/user.enum";
@@ -17,5 +17,11 @@ export class TariffController {
     @Auth(UserRole.ADMIN)
     addTariff(@Body() body: AddTariffDto) {
         return this.tariffService.addTariff(body)
+    }
+
+    @Delete(':id')
+    @Auth(UserRole.ADMIN)
+    deleteTariff(@Param('id') id: number) {
+        return this.tariffService.deleteTariff(id)
     }
 }

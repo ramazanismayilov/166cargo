@@ -16,6 +16,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import { UploadModule } from './modules/upload/upload.module';
 import { NewsModule } from './modules/news/news.module';
 import { TariffModule } from './modules/tariff/tariff.module';
+import { GeneralModule } from './modules/general/general.module';
 
 @Module({
   imports: [
@@ -90,7 +91,8 @@ import { TariffModule } from './modules/tariff/tariff.module';
     StationModule,
     UploadModule,
     NewsModule,
-    TariffModule
+    TariffModule,
+    GeneralModule
   ],
   controllers: [AppController],
   providers: [AppService],

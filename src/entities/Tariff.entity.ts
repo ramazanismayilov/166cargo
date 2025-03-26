@@ -7,7 +7,7 @@ export class TariffEntity {
     id: number;
 
     @Column({ type: 'enum', enum: TariffCountry, default: TariffCountry.TURKEY })
-    country: TariffCountry.TURKEY
+    country: TariffCountry
 
     @Column('float')
     weightRangeStart: number;

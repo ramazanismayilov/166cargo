@@ -6,6 +6,7 @@ import { ResetPasswordDto } from "./dto/reset-password.dto";
 import { Auth } from "src/common/decorators/auth.decorator";
 import { CreateForgetPasswordDto } from "./dto/create-forget-password.dto";
 import { ConfirmForgetPaswordDto } from "./dto/confirm-forget-password.dto";
+import { UserRole } from "src/common/enums/user.enum";
 
 @Controller('auth')
 export class AuthController {
@@ -22,7 +23,7 @@ export class AuthController {
     }
 
     @Post('logout')
-    @Auth()
+    @Auth(UserRole.ADMIN, UserRole.USER)
     logOut() {
         return this.authService.logOut()
     }

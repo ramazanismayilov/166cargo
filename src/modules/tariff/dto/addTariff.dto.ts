@@ -7,12 +7,12 @@ export class AddTariffDto {
     @IsString()
     @IsEnum(TariffCountry)
     @IsNotEmpty()
-    country: TariffCountry | null;
+    country: TariffCountry;
 
     @Type()
     @IsNumber()
     @IsNotEmpty()
-    width: number;  
+    width: number;
 
     @Type()
     @IsNumber()
@@ -23,4 +23,24 @@ export class AddTariffDto {
     @IsNumber()
     @IsNotEmpty()
     length: number;
+
+    @Type()
+    @IsNumber()
+    @IsNotEmpty()
+    weightRangeStart: number;
+
+    @Type()
+    @IsNumber()
+    @IsNotEmpty()
+    weightRangeEnd: number;
+
+    @Type()
+    @IsNumber()
+    @IsNotEmpty()
+    priceUSD: number;
+
+    @Type()
+    @IsNumber()
+    @IsNotEmpty()
+    priceGBP: number;
 }

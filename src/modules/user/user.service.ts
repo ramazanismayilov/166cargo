@@ -7,10 +7,13 @@ import { DataSource, Repository } from "typeorm";
 import { checkUniqueFields } from "src/common/utils/user.utils";
 import { ProfileUpdateDto } from "./dto/updateProfile.dto";
 import { StationEntity } from "src/entities/Station.entity";
+import { validateNationality } from "src/common/utils/register.utils";
+import { ProfileEntity } from "src/entities/Profile.entity";
 
 @Injectable()
 export class UserService {
     private userRepo: Repository<UserEntity>;
+    private profileRepo: Repository<ProfileEntity>;
     private stationRepo: Repository<StationEntity>
 
     constructor(
@@ -18,6 +21,7 @@ export class UserService {
         @InjectDataSource() private dataSource: DataSource
     ) {
         this.userRepo = this.dataSource.getRepository(UserEntity);
+        this.profileRepo = this.dataSource.getRepository(ProfileEntity);
         this.stationRepo = this.dataSource.getRepository(StationEntity)
     }
 
@@ -53,34 +57,37 @@ export class UserService {
     }
 
     async updateProfile(params: ProfileUpdateDto) {
-        const user = this.cls.get<UserEntity>('user')
-
+        const { phone, idSerialNumber, nationality, idSerialPrefix } = params;
+        const user = this.cls.get<UserEntity>('user');
+    
         const station = await this.stationRepo.findOne({ where: { id: params.stationId } });
         if (!station) throw new NotFoundException('Station not found');
-
-        const { email, phone, idSerialNumber, idFinCode } = params;
-
-        if (email || phone || idSerialNumber || idFinCode) {
-            await checkUniqueFields(this.userRepo, { email, phone, idSerialNumber, idFinCode });
+    
+        if (nationality && idSerialPrefix) {
+            validateNationality(nationality, idSerialPrefix);
         }
-
+    
+        if (phone || idSerialNumber) {
+            await checkUniqueFields(this.userRepo, { phone, idSerialNumber });
+        }
+    
+        // Update the profile first
+        await this.profileRepo.update(user.profile.id, {
+            gender: params.gender,
+            birthDate: params.birthDate,
+            address: params.address,
+        });
+    
+        // Update the user details
         await this.userRepo.update(user.id, {
-            email: params.email,
             phone: params.phone,
             idSerialNumber: params.idSerialNumber,
-            idFinCode: params.idFinCode,
             voen: params.voen,
-            profile: {
-                firstName: params.firstName,
-                lastName: params.lastName,
-                gender: params.gender,
-                birthDate: params.birthDate,
-                station,
-                address: params.address,
-            }
         });
-        await this.userRepo.update(user.id, params)
-
-        return { message: 'Profile is updated successfully' }
+    
+        // Fetch the updated user data
+        const updatedUser = await this.userRepo.findOne({ where: { id: user.id }, relations: ['profile', 'station'] });
+    
+        return { message: 'Profile is updated successfully', updatedUser };
     }
 }
