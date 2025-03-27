@@ -17,6 +17,7 @@ import { UploadModule } from './modules/upload/upload.module';
 import { NewsModule } from './modules/news/news.module';
 import { TariffModule } from './modules/tariff/tariff.module';
 import { GeneralModule } from './modules/general/general.module';
+import { ProductModule } from './modules/product/product.module';
 
 @Module({
   imports: [
@@ -92,7 +93,8 @@ import { GeneralModule } from './modules/general/general.module';
     UploadModule,
     NewsModule,
     TariffModule,
-    GeneralModule
+    GeneralModule,
+    ProductModule
   ],
   controllers: [AppController],
   providers: [AppService],

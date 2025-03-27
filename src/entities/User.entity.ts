@@ -5,11 +5,13 @@ import {
     UpdateDateColumn,
     CreateDateColumn,
     PrimaryGeneratedColumn,
+    OneToMany,
 } from "typeorm";
 import { ProfileEntity } from "./Profile.entity";
 import { UserRole, UserType } from "src/common/enums/user.enum";
 import { PhonePrefix } from "src/common/enums/phone.enum";
 import { IdSerialPrefix } from "src/common/enums/idSerialNumber.enum";
+import { Order } from "./Order.entity";
 
 @Entity('user')
 export class UserEntity {
@@ -57,6 +59,9 @@ export class UserEntity {
 
     @OneToOne(() => ProfileEntity, (profile) => profile.user, { cascade: true })
     profile: ProfileEntity;
+
+    @OneToMany(() => Order, (order) => order.user)
+    orders: Order[];
 
     @CreateDateColumn()
     createdAt: Date;
