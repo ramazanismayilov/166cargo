@@ -18,7 +18,7 @@ export class StoreEntity {
         name: 'imageId',
         referencedColumnName: 'id',
     })
-    image: ImageEntity;
+    image: ImageEntity | null;
 
     @OneToMany(() => CategoryStoreEntity, (categoryStore) => categoryStore.store)
     categoryStores: CategoryStoreEntity[];

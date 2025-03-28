@@ -55,11 +55,11 @@ export class NewsService {
         return { message: "News updated successfully", updatedNews };
     }
 
-    async deleteNews(id: number) {
-        let news = await this.newsRepo.findOne({ where: { id } });
+    async deleteNews(newsId: number) {
+        let news = await this.newsRepo.findOne({ where: { id: newsId } });
         if (!news) throw new NotFoundException({ message: 'News not found' });
 
-        await this.newsRepo.delete(id);
+        await this.newsRepo.delete(newsId);
         return { message: "News deleted successfully" };
     }
 }

@@ -1,8 +1,10 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectDataSource } from "@nestjs/typeorm";
 import { ImageEntity } from "src/entities/Image.entity";
 import { StoreEntity } from "src/entities/Store.entity";
 import { DataSource, Repository } from "typeorm";
+import { AddStoreDto } from "./dto/addStore.dto";
+import { UpdateStoreDto } from "./dto/updateStore.dto";
 
 @Injectable()
 export class StoreService {
@@ -23,7 +25,42 @@ export class StoreService {
         return stores;
     }
 
-    async addStore() { }
-    async updateStore() { }
-    async deleteStore() { }
+    async addStore(params: AddStoreDto) {
+        const storeExists = await this.storeRepo.findOne({ where: { name: params.name } });
+        if (storeExists) throw new ConflictException({ message: 'Store already exists' });
+
+        const image = params.imageId
+            ? await this.imageRepo.findOne({ where: { id: params.imageId } })
+            : null;
+        if (params.imageId && !image) throw new NotFoundException({ message: 'Image not found' });
+
+        const store = this.storeRepo.create({ ...params, image })
+        await this.storeRepo.save(store);
+        return { message: "Store created successfully", store };
+    }
+
+    async updateStore(id: number, params: UpdateStoreDto) {
+        const store = await this.storeRepo.findOne({ where: { id }, relations: ['image'] });
+        if (!store) throw new NotFoundException({ message: 'Store not found' });
+
+        const image = params.imageId
+            ? await this.imageRepo.findOne({ where: { id: params.imageId } })
+            : store.image;
+        if (params.imageId && !image) throw new NotFoundException({ message: 'Image not found' });
+
+        const updatedNews = await this.storeRepo.save({
+            ...store,
+            ...params,
+            image: image !== null ? image : store.image,
+        });
+        return { message: "Store updated successfully", updatedNews };
+    }
+
+    async deleteStore(storeId: number) {
+        let store = await this.storeRepo.findOne({ where: { id: storeId } });
+        if (!store) throw new NotFoundException({ message: 'Store not found' });
+
+        await this.storeRepo.delete(storeId);
+        return { message: "Store deleted successfully" };
+    }
 }
