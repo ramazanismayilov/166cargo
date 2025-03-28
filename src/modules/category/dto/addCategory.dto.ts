@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsNotEmpty, IsString, IsNumber, IsArray, IsUUID } from 'class-validator';
+import { IsNotEmpty, IsString, IsArray, IsUUID, IsOptional, IsInt } from 'class-validator';
 
-export class AddProductCategoryDto {
+export class AddCategoryDto {
     @Type()
     @IsNotEmpty()
     @IsString()
@@ -14,11 +14,9 @@ export class AddProductCategoryDto {
     @IsUUID('4', { each: true })
     imageId: string;
 
-    @Type()
-    @ApiProperty({
-        example: [2],
-    })
-    @IsNotEmpty()
+    @ApiProperty({ example: [2] })
+    @IsOptional()
     @IsArray()
-    stores: { storeId: number}[];
+    @IsInt({ each: true }) 
+    stores?: number[];
 }

@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { ImageEntity } from "./Image.entity";
-import { ProductStoreEntity } from "./ProductStore.entity";
+import { CategoryStoreEntity } from "./CategoryStore.entity";
 
 @Entity('store')
 export class StoreEntity {
@@ -20,6 +20,6 @@ export class StoreEntity {
     })
     image: ImageEntity;
 
-    @OneToMany(() => ProductStoreEntity, (productStore) => productStore.store)
-    products: ProductStoreEntity[];
+    @OneToMany(() => CategoryStoreEntity, (categoryStore) => categoryStore.store)
+    categoryStores: CategoryStoreEntity[];
 }

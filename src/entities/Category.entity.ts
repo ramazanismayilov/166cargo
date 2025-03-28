@@ -1,9 +1,9 @@
 import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { ProductStoreEntity } from "./ProductStore.entity";
+import { CategoryStoreEntity } from "./CategoryStore.entity";
 import { ImageEntity } from "./Image.entity";
 
-@Entity('productCategory')
-export class ProductCategoryEntity {
+@Entity('category')
+export class CategoryEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -17,6 +17,6 @@ export class ProductCategoryEntity {
     })
     image: ImageEntity | null;
 
-    @OneToMany(() => ProductStoreEntity, (productStore) => productStore.productCategory)
-    stores: ProductStoreEntity[];
+    @OneToMany(() => CategoryStoreEntity, (categoryStore) => categoryStore.category)
+    categoryStores: CategoryStoreEntity[];
 }

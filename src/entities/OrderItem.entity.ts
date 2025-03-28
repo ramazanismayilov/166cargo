@@ -1,6 +1,5 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Order } from "./Order.entity";
-import { ProductCategoryEntity } from "./ProductCategory.entity";
 
 @Entity('orderItem')
 export class OrderItem {
@@ -10,8 +9,8 @@ export class OrderItem {
     @ManyToOne(() => Order, (order) => order.items)
     order: Order;
 
-    @ManyToOne(() => ProductCategoryEntity, { eager: true })
-    productCategory: ProductCategoryEntity;
+    @Column()
+    product: string;
 
     @Column()
     quantity: number;
