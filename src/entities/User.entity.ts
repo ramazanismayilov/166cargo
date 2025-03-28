@@ -11,7 +11,7 @@ import { ProfileEntity } from "./Profile.entity";
 import { UserRole, UserType } from "src/common/enums/user.enum";
 import { PhonePrefix } from "src/common/enums/phone.enum";
 import { IdSerialPrefix } from "src/common/enums/idSerialNumber.enum";
-import { Order } from "./Order.entity";
+import { OrderEntity } from "./Order.entity";
 
 @Entity('user')
 export class UserEntity {
@@ -60,8 +60,8 @@ export class UserEntity {
     @OneToOne(() => ProfileEntity, (profile) => profile.user, { cascade: true })
     profile: ProfileEntity;
 
-    @OneToMany(() => Order, (order) => order.user)
-    orders: Order[];
+    @OneToMany(() => OrderEntity, (order) => order.user)
+    orders: OrderEntity[];
 
     @CreateDateColumn()
     createdAt: Date;

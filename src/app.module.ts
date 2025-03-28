@@ -19,6 +19,7 @@ import { TariffModule } from './modules/tariff/tariff.module';
 import { GeneralModule } from './modules/general/general.module';
 import { CategoryModule } from './modules/category/category.module';
 import { StoreModule } from './modules/store/store.module';
+import { OrderModule } from './modules/order/order.module';
 
 @Module({
   imports: [
@@ -96,7 +97,8 @@ import { StoreModule } from './modules/store/store.module';
     TariffModule,
     GeneralModule,
     CategoryModule,
-    StoreModule
+    StoreModule,
+    OrderModule
   ],
   controllers: [AppController],
   providers: [AppService],

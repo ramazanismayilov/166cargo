@@ -1,5 +1,5 @@
 import { TariffCountry } from 'src/common/enums/tariffCountry.enum';
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity('tariff')
 export class TariffEntity {
@@ -32,4 +32,10 @@ export class TariffEntity {
 
     @Column('float')
     length: number;
+
+    @CreateDateColumn()
+    createdAt: Date;
+
+    @UpdateDateColumn()
+    updatedAt: Date;
 }

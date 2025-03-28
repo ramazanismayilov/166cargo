@@ -1,20 +1,41 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Order } from "./Order.entity";
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { OrderEntity } from "./Order.entity";
+import { Size } from "src/common/enums/size.enum";
+import { Color } from "src/common/enums/color.enum";
+import { OrderCountry, OrderCurrency } from "src/common/enums/order.enum";
 
 @Entity('orderItem')
-export class OrderItem {
+export class OrderItemEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => Order, (order) => order.items)
-    order: Order;
+    @ManyToOne(() => OrderEntity, (order) => order.items)
+    order: OrderEntity;
 
     @Column()
-    product: string;
+    productUrl: string;
 
     @Column()
     quantity: number;
 
-    @Column('decimal', { precision: 10, scale: 2 })
-    price: number;
+    @Column({ type: 'enum', enum: Size, default: Size.S })
+    size: Size;
+
+    @Column({ type: 'enum', enum: Color, default: Color.BLACK })
+    color: Color;
+
+    @Column({ type: 'enum', enum: OrderCurrency })
+    currency: OrderCurrency;
+
+    @Column({ type: 'enum', enum: OrderCountry })
+    country: OrderCountry;
+
+    @Column({ type: 'decimal', precision: 10, scale: 2 })
+    productPrice: number;
+
+    @CreateDateColumn()
+    createdAt: Date;
+
+    @UpdateDateColumn()
+    updatedAt: Date;
 }

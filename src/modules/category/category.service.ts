@@ -44,23 +44,28 @@ export class CategoryService {
         const stores = storeIds.length > 0 ? await this.storeRepo.findBy({ id: In(storeIds) }) : [];
         if (stores.length !== storeIds.length) throw new NotFoundException({ message: 'Stores not found' });
 
-
         const category = this.categoryRepo.create({
             name: params.name,
             image: image,
-            categoryStores: stores.map(store => ({
-                store,
-            })),
+        });
+        await this.categoryRepo.save(category);
+
+        const categoryStores = stores.map(store => {
+            return this.categoryStoreRepo.create({
+                category,
+                store
+            });
         });
 
-        await this.categoryRepo.save(category);
-        return { message: 'Product category created successfully', category };
+        await this.categoryStoreRepo.save(categoryStores);
+
+        return { message: 'Category created successfully', category };
     }
 
     async updateCategory(id: number, params: UpdateCategoryDto) {
         let category = await this.categoryRepo.findOne({
             where: { id },
-            relations: ['image', 'stores', 'stores.store'],
+            relations: ['image', 'categoryStores'],
         });
         if (!category) throw new NotFoundException({ message: 'Category not found' });
 
@@ -85,7 +90,12 @@ export class CategoryService {
             categoryStores: newCategoryStores,
         });
 
-        return { message: "Category updated successfully", category };
+        const updatedCategory = await this.categoryRepo.findOne({
+            where: { id },
+            relations: ['image', 'categoryStores', 'categoryStores.store'],
+        });
+
+        return { message: "Category updated successfully", updatedCategory };
     }
 
     async deletecategory(categoryId: number) {

@@ -1,20 +1,23 @@
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Order } from "./Order.entity";
+import { Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { OrderEntity } from "./Order.entity";
 
-@Entity('shippingEntity')
-export class Shipping {
+@Entity('shipping')
+export class ShippingEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @OneToOne(() => Order, (order) => order.shipping)
-    order: Order;
+    @OneToOne(() => OrderEntity, (order) => order.shipping)
+    order: OrderEntity;
 
     @Column()
     address: string;
 
-    @Column({ default: 'processing' })
-    status: 'processing' | 'shipped' | 'delivered';
+    @Column()
+    trackingNumber: string;
 
-    @Column({ nullable: true })
-    trackingNumber?: string;
+    @CreateDateColumn()
+    createdAt: Date;
+
+    @UpdateDateColumn()
+    updatedAt: Date;
 }

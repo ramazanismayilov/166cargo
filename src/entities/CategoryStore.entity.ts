@@ -1,4 +1,4 @@
-import { Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { CategoryEntity } from "./Category.entity";
 import { StoreEntity } from "./Store.entity";
 
@@ -12,4 +12,10 @@ export class CategoryStoreEntity {
 
     @ManyToOne(() => StoreEntity, (store) => store.categoryStores, { onDelete: 'CASCADE' })
     store: StoreEntity;
+
+    @CreateDateColumn()
+    createdAt: Date;
+
+    @UpdateDateColumn()
+    updatedAt: Date;
 }

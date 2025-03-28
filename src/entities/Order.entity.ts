@@ -1,28 +1,32 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { UserEntity } from "./User.entity";
-import { OrderItem } from "./OrderItem.entity";
-import { Shipping } from "./Shipping.entity";
+import { OrderItemEntity } from "./OrderItem.entity";
+import { ShippingEntity } from "./Shipping.entity";
+import { OrderStatus } from "src/common/enums/order.enum";
 
 @Entity('order')
-export class Order {
+export class OrderEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
     @ManyToOne(() => UserEntity, (user) => user.orders)
     user: UserEntity;
 
-    @OneToMany(() => OrderItem, (orderItem) => orderItem.order)
-    items: OrderItem[];
+    @OneToMany(() => OrderItemEntity, (orderItem) => orderItem.order)
+    items: OrderItemEntity[];
 
-    @OneToOne(() => Shipping, (shipping) => shipping.order)
-    shipping: Shipping;
+    @OneToOne(() => ShippingEntity, (shipping) => shipping.order)
+    shipping: ShippingEntity;
 
-    @Column()
+    @Column({ type: 'decimal', precision: 10, scale: 2 })
     totalPrice: number;
 
-    @Column({ default: 'pending' })
-    status: 'pending' | 'shipped' | 'delivered' | 'cancelled';
+    @Column({ type: 'enum', enum: OrderStatus })
+    status: OrderStatus;
 
     @CreateDateColumn()
     createdAt: Date;
+
+    @UpdateDateColumn()
+    updatedAt: Date;
 }

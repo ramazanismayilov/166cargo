@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { CategoryStoreEntity } from "./CategoryStore.entity";
 import { ImageEntity } from "./Image.entity";
 
@@ -19,4 +19,10 @@ export class CategoryEntity {
 
     @OneToMany(() => CategoryStoreEntity, (categoryStore) => categoryStore.category)
     categoryStores: CategoryStoreEntity[];
+
+    @CreateDateColumn()
+    createdAt: Date;
+
+    @UpdateDateColumn()
+    updatedAt: Date;
 }
