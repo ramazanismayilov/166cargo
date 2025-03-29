@@ -1,4 +1,4 @@
-import { IsInt, IsString, IsEnum, Min, IsNumber } from 'class-validator';
+import { IsString, IsEnum, Min, IsNumber } from 'class-validator';
 import { Type } from 'class-transformer';
 import { Size } from 'src/common/enums/size.enum';
 import { Color } from 'src/common/enums/color.enum';
@@ -15,12 +15,12 @@ export class AddOrderItemDto {
     quantity: number;
 
     @Type()
-    @IsEnum(OrderCurrency)
-    currency: OrderCurrency;
-
-    @Type()
     @IsEnum(OrderCountry)
     country: OrderCountry;
+
+    @Type()
+    @IsEnum(OrderCurrency)
+    currency: OrderCurrency;
 
     @Type()
     @IsEnum(Size)
@@ -32,5 +32,6 @@ export class AddOrderItemDto {
 
     @Type()
     @IsNumber()
+    @Min(1)
     productPrice: number;
 }

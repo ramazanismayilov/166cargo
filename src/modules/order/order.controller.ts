@@ -1,21 +1,26 @@
-import { Body, Controller, Get, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
 import { OrderService } from "./order.service";
 import { Auth } from "src/common/decorators/auth.decorator";
-import { AddOrderItemDto } from "./dto/addOrderItem.dto";
-import { UserRole } from "src/common/enums/user.enum";
+import { AddOrderDto } from "./dto/addOrder.dto";
 
-@Controller()
+@Controller('orders')
 export class OrderController {
     constructor(private orderService: OrderService) { }
 
-    @Get("orderItems")
-    allOrderItems() {
-        return this.orderService.allOrderItems()
+    @Get()
+    allOrders() {
+        return this.orderService.allOrders()
     }
 
-    @Post("orderItem")
-    @Auth(UserRole.ADMIN, UserRole.USER)
-    addNews(@Body() body: AddOrderItemDto) {
-        return this.orderService.addOrderItem(body)
+    @Post()
+    @Auth()
+    addOrder(@Body() body: AddOrderDto) {
+        return this.orderService.addOrder(body)
+    }
+
+    @Delete(':id')
+    @Auth()
+    deleteOrder(@Param('id') id: number) {
+        return this.orderService.deleteOrder(id)
     }
 }
