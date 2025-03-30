@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectDataSource } from "@nestjs/typeorm";
 import { ClsService } from "nestjs-cls";
 import { UserRole } from "src/common/enums/user.enum";
@@ -9,6 +9,7 @@ import { ProfileUpdateDto } from "./dto/updateProfile.dto";
 import { StationEntity } from "src/entities/Station.entity";
 import { validateNationality } from "src/common/utils/register.utils";
 import { ProfileEntity } from "src/entities/Profile.entity";
+import { IncreaseBalanceDto } from "./dto/increaseBalance.dto";
 
 @Injectable()
 export class UserService {
@@ -59,35 +60,45 @@ export class UserService {
     async updateProfile(params: ProfileUpdateDto) {
         const { phone, idSerialNumber, nationality, idSerialPrefix } = params;
         const user = this.cls.get<UserEntity>('user');
-    
+
         const station = await this.stationRepo.findOne({ where: { id: params.stationId } });
         if (!station) throw new NotFoundException('Station not found');
-    
+
         if (nationality && idSerialPrefix) {
             validateNationality(nationality, idSerialPrefix);
         }
-    
+
         if (phone || idSerialNumber) {
             await checkUniqueFields(this.userRepo, { phone, idSerialNumber });
         }
-    
+
         // Update the profile first
         await this.profileRepo.update(user.profile.id, {
             gender: params.gender,
             birthDate: params.birthDate,
             address: params.address,
         });
-    
+
         // Update the user details
         await this.userRepo.update(user.id, {
             phone: params.phone,
             idSerialNumber: params.idSerialNumber,
             voen: params.voen,
         });
-    
+
         // Fetch the updated user data
         const updatedUser = await this.userRepo.findOne({ where: { id: user.id }, relations: ['profile', 'station'] });
-    
+
         return { message: 'Profile is updated successfully', updatedUser };
+    }
+
+    async increaseBalance(params: IncreaseBalanceDto) {
+        let user = this.cls.get<UserEntity>("user");
+
+        user.profile.balance = user.profile.balance;
+        user.profile.balance += params.balance;
+
+        await this.userRepo.save(user);
+        return { message: "Balance updated successfully", balance: user.profile.balance };
     }
 }

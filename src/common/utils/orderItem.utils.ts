@@ -2,10 +2,6 @@ import { BadRequestException } from "@nestjs/common"
 import { OrderCountry, OrderCurrency } from "../enums/order.enum"
 
 export function validateOrderCountry(country?: string, currency?: string) {
-    if (!country || !currency) {
-        throw new BadRequestException("Country and currency must be provided.");
-    }
-
     if (country === OrderCountry.TURKEY && currency === OrderCurrency.USD) {
         throw new BadRequestException("For Turkey, only TRY currency is accepted.");
     }

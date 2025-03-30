@@ -1,4 +1,4 @@
-import { IsString, IsEnum, Min, IsNumber, IsOptional } from 'class-validator';
+import { IsString, IsEnum, Min, IsNumber } from 'class-validator';
 import { Type } from 'class-transformer';
 import { Size } from 'src/common/enums/size.enum';
 import { Color } from 'src/common/enums/color.enum';
@@ -15,14 +15,12 @@ export class OrderItemBaseDto {
     quantity: number;
 
     @Type()
-    @IsOptional()
     @IsEnum(OrderCountry)
-    country?: OrderCountry;
+    country: OrderCountry;
 
     @Type()
-    @IsOptional()
     @IsEnum(OrderCurrency)
-    currency?: OrderCurrency;
+    currency: OrderCurrency;
 
     @Type()
     @IsEnum(Size)

@@ -1,15 +1,3 @@
-import { IsArray, IsEnum, IsInt, IsNumber, IsString } from "class-validator";
-import { Type } from "class-transformer";
-import { OrderStatus } from "src/common/enums/order.enum";
-import { ApiProperty } from "@nestjs/swagger";
+import { OrderBaseDto } from "./orderBase.dto";
 
-export class AddOrderDto {
-    @Type()
-    @IsString()
-    address: string;
-
-    @ApiProperty({ example: [2] })
-    @IsArray()
-    @IsInt({ each: true })
-    orderItems: number[];
-}
+export class AddOrderDto extends OrderBaseDto { }

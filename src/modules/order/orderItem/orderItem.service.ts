@@ -46,14 +46,16 @@ export class OrderItemService {
 
         validateOrderCountry(params.country, params.currency);
 
-        const updatedProductPrice = params.productPrice || orderItem.productPrice;
-        const updatedQuantity = params.quantity || orderItem.quantity;
+        const updatedProductPrice = params.productPrice ?? orderItem.productPrice;
+        const updatedQuantity = params.quantity ?? orderItem.quantity;
 
         const totalPrice = updatedProductPrice * updatedQuantity;
         let localPrice: number = totalPrice;
 
-        if (params.currency === OrderCurrency.TRY) localPrice = roundToDecimal(totalPrice * 0.044);
-        if (params.currency === OrderCurrency.USD) localPrice = roundToDecimal(totalPrice * 1.70);
+        const currency = params.currency ?? orderItem.currency;
+
+        if (currency === OrderCurrency.TRY) localPrice = roundToDecimal(totalPrice * 0.044);
+        if (currency === OrderCurrency.USD) localPrice = roundToDecimal(totalPrice * 1.70);
 
         await this.orderItemRepo.update(orderItemId, {
             ...params,
@@ -65,7 +67,6 @@ export class OrderItemService {
 
         return { message: "OrderItem updated successfully", orderItem };
     }
-
 
     async deleteOrderItem(orderItemId: number) {
         let orderItem = await this.orderItemRepo.findOne({ where: { id: orderItemId } });

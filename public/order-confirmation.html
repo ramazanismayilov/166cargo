@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Status Update</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fdf1b0;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      color: #333;
+      text-align: center;
+    }
+
+    p {
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .status {
+      color: #fff;
+      padding: 10px;
+      border-radius: 5px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .pending {
+      background-color: #f39c12;
+      /* Orange for Pending */
+    }
+
+    .shipped {
+      background-color: #3498db;
+      /* Blue for Shipped */
+    }
+
+    .intransit {
+      background-color: #f1c40f;
+      /* Yellow for In Transit */
+    }
+
+    .delivered {
+      background-color: #2ecc71;
+      /* Green for Delivered */
+    }
+
+    .canceled {
+      background-color: #e74c3c;
+      /* Red for Canceled */
+    }
+
+    .footer {
+      font-size: 14px;
+      color: #777;
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Order Status Update</h1>
+    <p>Hello {{firstName}},</p>
+    <p>Your order with tracking number <strong>{{trackingNumber}}</strong> has changed its status to:</p>
+
+    <div class="status {{statusClass}}">
+      {{status}}
+    </div>
+
+    <p>We are here to ensure that your experience with us is smooth. If you need any further assistance, feel free to
+      contact us.</p>
+
+    <div class="footer">
+      <p>Thank you for shopping with us!</p>
+      <p>If you have any questions, don't hesitate to reach out.</p>
+    </div>
+  </div>
+</body>
+
+</html>

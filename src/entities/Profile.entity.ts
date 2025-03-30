@@ -39,13 +39,10 @@ export class ProfileEntity {
     @ManyToOne(() => StationEntity, { onDelete: 'SET NULL', nullable: true })
     station: StationEntity;
 
-    @Column({ nullable: true })
-    coupon: string
+    @Column({ type: 'int', nullable: true })
+    promoCode: number | null; 
 
-    @Column({ type: 'timestamp', nullable: true })
-    promoDate: Date
-
-    @Column({ type: 'decimal', default: 0 })
+    @Column({ type: 'float', default: 0 })
     balance: number
 
     @Column({ type: 'int', default: 0 })

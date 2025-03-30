@@ -9,7 +9,7 @@ export class OrderItemEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => OrderEntity, (order) => order.orderItems, { onDelete: 'CASCADE' })
+    @ManyToOne(() => OrderEntity, (order) => order.orderItems, { onDelete: 'SET NULL' })
     order: OrderEntity;
 
     @Column()

@@ -82,8 +82,7 @@ export class AuthService {
                 birthDate: params.birthDate,
                 address: params.address,
                 station,
-                coupon: v4(),
-                promoDate: new Date(),
+                promoCode: generateNumber()
             }
         });
 

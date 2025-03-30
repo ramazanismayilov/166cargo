@@ -1,8 +1,10 @@
 export enum OrderStatus {
     PENDING = 'PENDING',
     SHIPPED = 'SHIPPED',
-    IN_TRANSIT = 'IN TRANSIT',
+    INTRANSIT = 'INTRANSIT',
+    READYFORPICKUP = 'READYFORPICKUP',
     DELIVERED = 'DELIVERED',
+    CANCELED = 'CANCELED',
 }
 
 export enum OrderCurrency {

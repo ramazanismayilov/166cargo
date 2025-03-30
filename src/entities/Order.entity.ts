@@ -14,7 +14,7 @@ export class OrderEntity {
     @OneToMany(() => OrderItemEntity, (orderItem) => orderItem.order, { cascade: true })
     orderItems: OrderItemEntity[];
 
-    @Column({ type: 'decimal', precision: 10, scale: 2 })
+    @Column({ type: 'float' })
     totalPrice: number;
 
     @Column({ type: 'enum', enum: OrderStatus, default: OrderStatus.PENDING })
@@ -25,6 +25,9 @@ export class OrderEntity {
 
     @Column()
     address: string
+
+    @Column({ default: false })
+    isDeclared: boolean
 
     @CreateDateColumn()
     createdAt: Date;

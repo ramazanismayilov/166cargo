@@ -3,6 +3,7 @@ import { UserService } from "./user.service";
 import { Auth } from "src/common/decorators/auth.decorator";
 import { UserRole } from "src/common/enums/user.enum";
 import { ProfileUpdateDto } from "./dto/updateProfile.dto";
+import { IncreaseBalanceDto } from "./dto/increaseBalance.dto";
 
 @Controller('users')
 export class UserController {
@@ -30,5 +31,11 @@ export class UserController {
     @Auth(UserRole.ADMIN, UserRole.USER)
     async updateProfile(@Body() body: ProfileUpdateDto) {
         return this.userService.updateProfile(body);
+    }
+
+    @Post('increaseBalance')
+    @Auth(UserRole.ADMIN, UserRole.USER)
+    async increaseBalance(@Body() body: IncreaseBalanceDto) {
+        return this.userService.increaseBalance(body);
     }
 }
