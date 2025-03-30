@@ -6,8 +6,8 @@ import { DataSource, In, Repository } from "typeorm";
 import { AddOrderDto } from "./dto/addOrder.dto";
 import { UserEntity } from "src/entities/User.entity";
 import { ClsService } from "nestjs-cls";
-import { v4 } from "uuid";
-import { generateCustomerNumber } from "src/common/utils/customerNumber.utils";
+import { MailerService } from "@nestjs-modules/mailer";
+import { generateNumber } from "src/common/utils/number.utils";
 @Injectable()
 export class OrderService {
     private orderRepo: Repository<OrderEntity>
@@ -16,6 +16,7 @@ export class OrderService {
 
     constructor(
         private cls: ClsService,
+        private mailer: MailerService,
         @InjectDataSource() private dataSoruce: DataSource
     ) {
         this.orderRepo = this.dataSoruce.getRepository(OrderEntity)
@@ -24,10 +25,19 @@ export class OrderService {
     }
 
     async allOrders() {
-        const orders = await this.orderRepo.find({ order: { id: 'ASC' }, relations: ['user', 'orderItems'] });
+        const orders = await this.orderRepo.find({
+            order: { id: 'ASC' },
+            relations: ['user', 'user.profile', 'orderItems'],
+        });
+
         if (orders.length === 0) throw new NotFoundException('Orders not found');
 
-        return orders;
+        return orders.map(order => ({
+            ...order,
+            user: order.user && order.user.profile
+                ? { firstName: order.user.profile.firstName, lastName: order.user.profile.lastName }
+                : null
+        }));
     }
 
     async addOrder(params: AddOrderDto) {
@@ -39,14 +49,37 @@ export class OrderService {
             : [];
         if (orderItems.length !== orderIds.length) throw new NotFoundException({ message: "Some orders were not found. Please check order item IDs." });
 
+        const totalPrice = orderItems.reduce((sum, item) => sum + Number(item.productPrice), 0);
+
         const order = this.orderRepo.create({
             user,
             address: params.address,
             orderItems,
-            status: params.status
+            totalPrice,
+            trackingNumber: generateNumber(),
         });
 
         await this.orderRepo.save(order);
+
+        await this.mailer.sendMail({
+            to: user.email,
+            subject: '📦 Order Confirmation - 166 Cargo',
+            template: 'order-confirmation',
+            context: {
+                firstName: user.profile?.firstName,
+                trackingNumber: order.trackingNumber,
+                totalPrice: order.totalPrice.toFixed(2),
+                currency: order.orderItems[0].currency,
+                orderItems: order.orderItems.map(item => ({
+                    productUrl: item.productUrl,
+                    quantity: item.quantity,
+                    color: item.color,
+                    price: item.productPrice,
+                    currency: item.currency,
+                })),
+            },
+        });
+
         return {
             message: "Order created successfully",
             order: {
@@ -57,6 +90,7 @@ export class OrderService {
                 }
             }
         };
+
     }
 
     async deleteOrder(orderId: number) {
@@ -67,13 +101,3 @@ export class OrderService {
         return ({ message: "Order deleted successfully" })
     }
 }
-
-// async updateOrder(orderItemId: number, params: UpdateOrderItem) {
-//     let orderItem = await this.orderItemRepo.findOne({ where: { id: orderItemId } });
-//     if (!orderItem) throw new NotFoundException({ message: 'OrderItem not found' });
-
-//     await this.orderItemRepo.update(orderItemId, params);
-//     orderItem = await this.orderItemRepo.findOne({ where: { id: orderItemId } });
-//     return { message: "OrderItem updated successfully", orderItem };
-// }
-

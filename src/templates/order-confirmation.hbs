@@ -1,0 +1,106 @@
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>Order Confirmation</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #fdf1b0;
+        margin: 0;
+        padding: 20px;
+      }
+      .container {
+        max-width: 600px;
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      h2 {
+        color: #f39c12;
+      }
+      .tracking {
+        font-size: 18px;
+        font-weight: bold;
+        color: #d9534f;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+      }
+      th {
+        background: #f1c40f;
+        color: #fff;
+      }
+      .footer {
+        margin-top: 20px;
+        font-size: 14px;
+        color: #666;
+      }
+      .logo {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .button {
+        background-color: #f39c12;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class='container'>
+      <div class='logo'>
+        <img
+          src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPd_yiCk-6pd8mVt5N3Es2ZxffypF9JjNeqA&s'
+          alt='Company Logo'
+          width='150'
+        />
+      </div>
+      <h2>📦 Your Order Has Been Placed Successfully!</h2>
+      <p>Dear
+        {{firstName}}, your order has been successfully processed. Below are the
+        details of your order.</p>
+      <p><strong>Tracking Number:</strong>
+        <span class='tracking'>{{trackingNumber}}</span></p>
+      <h3>🛒 Order Summary</h3>
+      <table border='1' cellspacing='0' cellpadding='5'>
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Color</th>
+            <th>Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each orderItems}}
+            <tr>
+              <td><a href='{{this.productUrl}}' target='_blank'>View Product</a></td>
+              <td>{{this.quantity}}</td>
+              <td>{{this.color}}</td>
+              <td>{{this.price}} {{this.currency}}</td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+      <p><strong>Total Price:</strong> {{totalPrice}} {{currency}}</p>
+      <p class='footer'>Thank you for shopping with us! If you have any
+        questions, please contact us at
+        <a
+          href='mailto:support@yourcompany.com'
+        >support@yourcompany.com</a>.</p>
+    </div>
+  </body>
+</html>

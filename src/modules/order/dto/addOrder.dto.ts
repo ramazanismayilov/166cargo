@@ -12,12 +12,4 @@ export class AddOrderDto {
     @IsArray()
     @IsInt({ each: true })
     orderItems: number[];
-
-    @Type()
-    @IsNumber()
-    totalPrice: number;
-
-    @Type()
-    @IsEnum(OrderStatus)
-    status: OrderStatus;
 }

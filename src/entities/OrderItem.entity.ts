@@ -30,8 +30,14 @@ export class OrderItemEntity {
     @Column({ type: 'enum', enum: OrderCountry })
     country: OrderCountry;
 
-    @Column({ type: 'decimal', precision: 10, scale: 2 })
+    @Column({ type: 'float'})
     productPrice: number;
+
+    @Column({ type: 'float'})
+    totalPrice: number;
+
+    @Column({ type: 'float'})
+    localPrice: number;
 
     @CreateDateColumn()
     createdAt: Date;

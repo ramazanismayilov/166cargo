@@ -9,7 +9,6 @@ import { LoginDto } from "./dto/login.dto";
 import { compare } from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
 import { validateNationality, validatePasswords, validateUserType } from "src/common/utils/register.utils";
-import { generateCustomerNumber } from "src/common/utils/customerNumber.utils";
 import { ResetPasswordDto } from "./dto/reset-password.dto";
 import { ClsService } from "nestjs-cls";
 import { MailerService } from "@nestjs-modules/mailer";
@@ -19,6 +18,7 @@ import { addMinutes } from "date-fns";
 import { CreateForgetPasswordDto } from "./dto/create-forget-password.dto";
 import { ConfirmForgetPaswordDto } from "./dto/confirm-forget-password.dto";
 import { checkUniqueFields } from "src/common/utils/user.utils";
+import { generateNumber } from "src/common/utils/number.utils";
 
 @Injectable()
 export class AuthService {
@@ -72,7 +72,7 @@ export class AuthService {
             phone: params.phone,
             idSerialNumber: params.idSerialNumber,
             idFinCode: params.idFinCode,
-            customerNumber: generateCustomerNumber(),
+            customerNumber: generateNumber(),
             loginDate: new Date(),
             voen: params.voen,
             profile: {

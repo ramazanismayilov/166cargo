@@ -11,6 +11,6 @@ export enum OrderCurrency {
 }
 
 export enum OrderCountry {
-    TURKEY = 'Turkey',
+    TURKEY = 'TURKEY',
     USA = 'USA',
 }

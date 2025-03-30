@@ -15,19 +15,19 @@ export class OrderItemController {
     }
 
     @Post()
-    @Auth()
+    @Auth(UserRole.USER, UserRole.ADMIN)
     addOrderItem(@Body() body: AddOrderItemDto) {
         return this.orderItemService.addOrderItem(body)
     }
 
     @Post(':id')
-    @Auth()
+    @Auth(UserRole.USER, UserRole.ADMIN)
     updateOrderItem(@Param('id') id: number, @Body() body: UpdateOrderItem) {
         return this.orderItemService.updateOrderItem(id, body)
     }
 
     @Delete(':id')
-    @Auth()
+    @Auth(UserRole.USER, UserRole.ADMIN)
     deleteOrderItem(@Param('id') id: number) {
         return this.orderItemService.deleteOrderItem(id)
     }
