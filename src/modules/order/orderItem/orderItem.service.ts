@@ -1,21 +1,24 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectDataSource } from "@nestjs/typeorm";
 import { OrderItemEntity } from "src/entities/OrderItem.entity";
-import { DataSource, Repository } from "typeorm";
+import { DataSource, In, Repository } from "typeorm";
 import { AddOrderItemDto } from "./dto/addOrderItem.dto";
 import { validateOrderCountry } from "src/common/utils/orderItem.utils";
-import { OrderCurrency } from "src/common/enums/order.enum";
+import { OrderCurrency, OrderStatus } from "src/common/enums/order.enum";
 import { roundToDecimal } from "src/common/utils/number.utils";
 import { UpdateOrderItem } from "./dto/updateOrderItem";
+import { OrderEntity } from "src/entities/Order.entity";
 
 @Injectable()
 export class OrderItemService {
     private orderItemRepo: Repository<OrderItemEntity>
+    private orderRepo: Repository<OrderEntity>
 
     constructor(
         @InjectDataSource() private dataSoruce: DataSource
     ) {
         this.orderItemRepo = this.dataSoruce.getRepository(OrderItemEntity)
+        this.orderRepo = this.dataSoruce.getRepository(OrderEntity)
     }
 
     async allOrderItems() {
@@ -69,10 +72,22 @@ export class OrderItemService {
     }
 
     async deleteOrderItem(orderItemId: number) {
-        let orderItem = await this.orderItemRepo.findOne({ where: { id: orderItemId } });
+        let orderItem = await this.orderItemRepo.findOne({ where: { id: orderItemId }, relations: ['order'] });
         if (!orderItem) throw new NotFoundException({ message: 'OrderItem not found' });
 
-        await this.orderItemRepo.delete(orderItemId)
-        return ({ message: "OrderItem deleted successfully" })
+        let order = orderItem.order;
+        if (!order) throw new NotFoundException({ message: 'Order not found' });
+
+        if (order.status !== OrderStatus.PENDING) throw new BadRequestException({ message: 'Order status is not pending, cannot delete the item' });
+
+        let orderItems = await this.orderItemRepo.find({ where: { order: { id: order.id } } });
+
+        if (orderItems.length === 1) {
+            await this.orderRepo.delete(order.id);
+        } else {
+            await this.orderItemRepo.delete(orderItemId);
+        }
+
+        return { message: "OrderItem deleted successfully" };
     }
 }

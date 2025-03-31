@@ -11,6 +11,7 @@ import { generateNumber } from "src/common/utils/number.utils";
 import { OrderStatus } from "src/common/enums/order.enum";
 import { OrderStatusDto } from "./dto/orderStatus.dto";
 import { IsDeclaredDto } from "./dto/isDeclared.dto";
+import { UpdateOrderDto } from "./dto/updateOrder.dto";
 @Injectable()
 export class OrderService {
     private userRepo: Repository<UserEntity>
@@ -119,9 +120,25 @@ export class OrderService {
         };
     }
 
+    async updateOrder(orderId: number, params: UpdateOrderDto) {
+        let order = await this.orderRepo.findOne({ where: { id: orderId } });
+        if (!order) throw new NotFoundException({ message: 'Order not found' });
+        
+        if (order.status !== OrderStatus.PENDING) throw new BadRequestException({ message: 'Order status is not pending, cannot update the item' });
+
+        await this.orderRepo.update(orderId, params);
+
+        order = await this.orderRepo.findOne({ where: { id: orderId } });
+
+        return { message: 'Order updated successfully', order };
+    }
+
+
     async deleteOrder(orderId: number) {
         let order = await this.orderRepo.findOne({ where: { id: orderId } });
         if (!order) throw new NotFoundException({ message: 'Order not found' });
+
+        if (order.status !== OrderStatus.PENDING) throw new BadRequestException({ message: 'Order status is not pending, cannot delete the item' });
 
         await this.orderRepo.delete(orderId)
         return ({ message: "Order deleted successfully" })
