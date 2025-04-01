@@ -23,13 +23,13 @@ export class AuthController {
     }
 
     @Post('logout')
-    @Auth()
+    @Auth(UserRole.ADMIN, UserRole.USER)
     logOut() {
         return this.authService.logOut()
     }
 
     @Post('reset-password')
-    @Auth()
+    @Auth(UserRole.ADMIN, UserRole.USER)
     resetPassword(@Body() body: ResetPasswordDto) {
         return this.authService.resetPassword(body)
     }

@@ -8,7 +8,6 @@ import { StationEntity } from "src/entities/Station.entity";
 import { LoginDto } from "./dto/login.dto";
 import { compare } from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
-import { validateNationality, validatePasswords, validateUserType } from "src/common/utils/register.utils";
 import { ResetPasswordDto } from "./dto/reset-password.dto";
 import { ClsService } from "nestjs-cls";
 import { MailerService } from "@nestjs-modules/mailer";
@@ -17,9 +16,9 @@ import { UserActivationEntity } from "src/entities/UserActivation.entity";
 import { addMinutes } from "date-fns";
 import { CreateForgetPasswordDto } from "./dto/create-forget-password.dto";
 import { ConfirmForgetPaswordDto } from "./dto/confirm-forget-password.dto";
-import { checkUniqueFields } from "src/common/utils/user.utils";
+import { UserUtils } from "src/common/utils/user.utils";
 import { generateNumber } from "src/common/utils/number.utils";
-import { Nationality } from "src/common/enums/nationality.enum";
+import { I18nService } from "nestjs-i18n";
 
 @Injectable()
 export class AuthService {
@@ -31,6 +30,8 @@ export class AuthService {
         private jwt: JwtService,
         private cls: ClsService,
         private mailer: MailerService,
+        private userUtils: UserUtils,
+        private i18n: I18nService,
         @InjectDataSource() private dataSource: DataSource
     ) {
         this.userRepo = this.dataSource.getRepository(UserEntity)
@@ -39,8 +40,10 @@ export class AuthService {
     }
 
     async login(params: LoginDto) {
+        const lang = this.cls.get('lang');
+
         let user = await this.userRepo.findOne({ where: { email: params.email } });
-        if (!user) throw new UnauthorizedException('Username or password is wrong');
+        if (!user) throw new UnauthorizedException(this.i18n.t('auth.username_or_password_wrong', { lang }));
 
         if (user.logout) {
             user.logout = false;
@@ -48,22 +51,23 @@ export class AuthService {
         }
 
         let checkPassword = await compare(params.password, user.password);
-        if (!checkPassword) throw new UnauthorizedException('Username or password is wrong');
+        if (!checkPassword) throw new UnauthorizedException(this.i18n.t('auth.username_or_password_wrong', { lang }));
 
         let token = this.jwt.sign({ userId: user.id });
 
-        return { message: "Login is successfully", token };
+        return { message: this.i18n.t('auth.login_success_message', { lang }), token };
     }
 
     async register(params: RegisterDto) {
-        await checkUniqueFields(this.userRepo, params);
+        const lang = this.cls.get('lang');
+        await this.userUtils.checkUniqueFields(this.userRepo, params);
 
         const station = await this.stationRepo.findOne({ where: { id: params.stationId } });
-        if (!station) throw new NotFoundException('Station not found');
+        if (!station) throw new NotFoundException(this.i18n.t('station.not_found', { lang }));
 
-        validatePasswords(params.password, params.repeatPassword);
-        validateUserType(params.userType, params.voen);
-        validateNationality(params.nationality, params.idSerialPrefix);
+        this.userUtils.validatePasswords(params.password, params.repeatPassword);
+        this.userUtils.validateUserType(params.userType, params.voen);
+        this.userUtils.validateNationality(params.nationality, params.idSerialPrefix);
 
         const hashedPassword = await bcrypt.hash(params.password, 10);
 
@@ -101,38 +105,42 @@ export class AuthService {
                 },
             });
         }
-        return { message: "Register is successfully", user };
+        return { message: this.i18n.t('auth.register_success_message', { lang }), user };
     }
 
     async logOut() {
+        const lang = this.cls.get('lang');
         let user = this.cls.get<UserEntity>('user')
-        if (user) {
+        if (user && user.logout === false) {
             user.logout = true
             await this.userRepo.update(user.id, { logout: true });
+            return { message: this.i18n.t('auth.logout_success_message', { lang }) };
         }
-        return { message: 'Successfully logged out' };
+
+        return { message: this.i18n.t('auth.logout_already_message', { lang }) };
     }
 
     async resetPassword(params: ResetPasswordDto) {
+        const lang = this.cls.get('lang');
         let user = this.cls.get<UserEntity>('user')
 
-        validatePasswords(params.newPassword, params.repeatPassword);
-        if (params.currentPassword === params.newPassword) throw new BadRequestException("New password cannot be the same as the current password");
+        this.userUtils.validatePasswords(params.newPassword, params.repeatPassword);
+        if (params.currentPassword === params.newPassword) throw new BadRequestException(this.i18n.t('auth.new_password_current_password', { lang }));
 
         let checkPassword = await compare(params.currentPassword, user.password);
-        if (!checkPassword) throw new BadRequestException('Current password is wrong');
+        if (!checkPassword) throw new BadRequestException(this.i18n.t('auth.current_password_wrong', { lang }));
 
         const hashedPassword = await bcrypt.hash(params.newPassword, 10);
         user.password = hashedPassword;
 
         await this.userRepo.save(user)
-        return { message: 'Password is updated successfully' };
+        return { message: this.i18n.t('auth.password_update_success_message', { lang }) };
     }
 
     async createForgetPasswordRequest(params: CreateForgetPasswordDto) {
+        const lang = this.cls.get('lang');
         let user = await this.userRepo.findOne({ where: { email: params.email }, relations: ['profile'] });
-        if (!user) throw new NotFoundException('User is not found');
-        if (!user.profile) throw new NotFoundException('User profile is not found');
+        if (!user) throw new NotFoundException(this.i18n.t('auth.user_not_found', { lang }));
 
         let activation = await this.userActivationRepo.findOne({
             where: {
@@ -162,25 +170,26 @@ export class AuthService {
             })
 
             await this.userActivationRepo.save(activation)
-            return { message: 'Mail has been successfully sent' };
+            return { message: this.i18n.t('auth.mail_sent_success_message', { lang }) };
         } catch (error) {
-            throw new InternalServerErrorException('Due some reasons, we cannot send mail for forgot-password');
+            throw new InternalServerErrorException(this.i18n.t('auth.mail_sent_error_message', { lang }));
         }
     }
 
     async confirmForgetPassword(params: ConfirmForgetPaswordDto) {
+        const lang = this.cls.get('lang');
         let activation = await this.userActivationRepo.findOne({
             where: {
                 token: params.token,
                 expiredAt: MoreThan(new Date()),
             },
         });
-        if (!activation) throw new BadRequestException('Token is not valid');
+        if (!activation) throw new BadRequestException(this.i18n.t('auth.token_invalid', { lang }));
 
-        validatePasswords(params.newPassword, params.repeatPassword)
+        this.userUtils.validatePasswords(params.newPassword, params.repeatPassword)
 
         let user = await this.userRepo.findOne({ where: { id: activation.userId } });
-        if (!user) throw new NotFoundException('User not found');
+        if (!user) throw new NotFoundException(this.i18n.t('auth.user_not_found', { lang }));
 
         const hashedPassword = await bcrypt.hash(params.newPassword, 10);
         user.password = hashedPassword;
@@ -188,6 +197,6 @@ export class AuthService {
 
         await this.userActivationRepo.delete({ userId: user.id });
 
-        return { message: 'Password is successfully updated' };
+        return { message: this.i18n.t('auth.password_update_success_message', { lang }) };
     }
 }

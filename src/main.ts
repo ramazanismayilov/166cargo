@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import { I18nValidationExceptionFilter, I18nValidationPipe } from 'nestjs-i18n';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -15,6 +16,15 @@ async function bootstrap() {
       whitelist: true,
       forbidNonWhitelisted: true,
     }),
+    new I18nValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  );
+
+  app.useGlobalFilters(
+    new I18nValidationExceptionFilter({ detailedErrors: false }),
   );
 
   const config = new DocumentBuilder()
@@ -22,6 +32,12 @@ async function bootstrap() {
     .setDescription('The 166 Kargo API description')
     .setVersion('1.0')
     .addBearerAuth()
+    .addGlobalParameters({
+      name: 'accept-language',
+      description: 'language',
+      allowEmptyValue: true,
+      in: 'header',
+    })
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('', app, documentFactory, {

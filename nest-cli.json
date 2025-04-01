@@ -11,7 +11,7 @@
         "watchAssets": true
       },
       {
-        "include": "i18n/*",
+        "include": "i18n/**/*",
         "watchAssets": true
       }
     ]

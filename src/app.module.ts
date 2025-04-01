@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -21,6 +21,7 @@ import { CategoryModule } from './modules/category/category.module';
 import { StoreModule } from './modules/store/store.module';
 import { OrderModule } from './modules/order/order.module';
 import { AcceptLanguageResolver, HeaderResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
+import { LanguageMiddleware } from './common/middlewares/i18n.middleware';
 
 @Module({
   imports: [
@@ -94,7 +95,7 @@ import { AcceptLanguageResolver, HeaderResolver, I18nModule, QueryResolver } fro
       useFactory: () => ({
         fallbackLanguage: 'en',
         loaderOptions: {
-          path: join(__dirname, '/common/i18n/'),
+          path: join(__dirname, '/i18n/'),
           watch: true,
         },
         resolvers: [
@@ -119,4 +120,8 @@ import { AcceptLanguageResolver, HeaderResolver, I18nModule, QueryResolver } fro
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    return consumer.apply(LanguageMiddleware).forRoutes('*');
+  }
+}

@@ -4,12 +4,11 @@ import { ClsService } from "nestjs-cls";
 import { UserRole } from "src/common/enums/user.enum";
 import { UserEntity } from "src/entities/User.entity";
 import { DataSource, Repository } from "typeorm";
-import { checkUniqueFields } from "src/common/utils/user.utils";
 import { ProfileUpdateDto } from "./dto/updateProfile.dto";
 import { StationEntity } from "src/entities/Station.entity";
-import { validateNationality } from "src/common/utils/register.utils";
 import { ProfileEntity } from "src/entities/Profile.entity";
 import { IncreaseBalanceDto } from "./dto/increaseBalance.dto";
+import { UserUtils } from "src/common/utils/user.utils";
 
 @Injectable()
 export class UserService {
@@ -19,6 +18,7 @@ export class UserService {
 
     constructor(
         private cls: ClsService,
+        private userUtils: UserUtils,
         @InjectDataSource() private dataSource: DataSource
     ) {
         this.userRepo = this.dataSource.getRepository(UserEntity);
@@ -65,11 +65,11 @@ export class UserService {
         if (!station) throw new NotFoundException('Station not found');
 
         if (nationality && idSerialPrefix) {
-            validateNationality(nationality, idSerialPrefix);
+            this.userUtils.validateNationality(nationality, idSerialPrefix);
         }
 
         if (phone || idSerialNumber) {
-            await checkUniqueFields(this.userRepo, { phone, idSerialNumber });
+            await this.userUtils.checkUniqueFields(this.userRepo, { phone, idSerialNumber });
         }
 
         // Update the profile first
