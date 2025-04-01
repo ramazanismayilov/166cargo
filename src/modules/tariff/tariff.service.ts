@@ -14,11 +14,11 @@ export class TariffService {
         this.tariffRepo = this.dataSource.getRepository(TariffEntity)
     }
 
-    async allTaariffs() {
-        const taariffs = await this.tariffRepo.find({ order: { id: 'ASC' } })
-        if (taariffs.length === 0) throw new NotFoundException('Taariffs not found');
+    async allTariffs() {
+        const tariffs = await this.tariffRepo.find({ order: { id: 'ASC' } })
+        if (tariffs.length === 0) throw new NotFoundException('Tariffs not found');
 
-        return taariffs
+        return tariffs
     }
 
     async addTariff(params: AddTariffDto) {

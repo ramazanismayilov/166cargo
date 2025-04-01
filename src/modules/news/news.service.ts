@@ -28,10 +28,8 @@ export class NewsService {
         const newsExists = await this.newsRepo.findOne({ where: { title: params.title } });
         if (newsExists) throw new ConflictException({ message: 'News already exists' });
 
-        const image = params.imageId
-            ? await this.imageRepo.findOne({ where: { id: params.imageId } })
-            : null;
-        if (params.imageId && !image) throw new NotFoundException({ message: 'Image not found' });
+        const image = await this.imageRepo.findOne({ where: { id: params.imageId } })
+        if (!image) throw new NotFoundException({ message: 'Image not found' });
 
         const news = this.newsRepo.create({ ...params, image })
         await this.newsRepo.save(news);
@@ -41,18 +39,18 @@ export class NewsService {
     async updateNews(id: number, params: UpdateNewsDto) {
         const news = await this.newsRepo.findOne({ where: { id }, relations: ['image'] });
         if (!news) throw new NotFoundException({ message: 'News not found' });
-
-        const image = params.imageId
-            ? await this.imageRepo.findOne({ where: { id: params.imageId } })
-            : news.image;
-        if (params.imageId && !image) throw new NotFoundException({ message: 'Image not found' });
-
-        const updatedNews = await this.newsRepo.save({
-            ...news,
-            ...params,
-            image: image !== null ? image : news.image,
-        });
-        return { message: "News updated successfully", updatedNews };
+    
+        if (params.imageId) {
+            const image = await this.imageRepo.findOne({ where: { id: params.imageId } });
+            if (!image) throw new NotFoundException({ message: 'Image not found' });
+            news.image = image;
+        }
+    
+        Object.assign(news, params);
+        await this.newsRepo.save(news);
+    
+        const { imageId, ...cleanedNews } = news as any;
+        return { message: "News updated successfully", updatedNews: cleanedNews };
     }
 
     async deleteNews(newsId: number) {

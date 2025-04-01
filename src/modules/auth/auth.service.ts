@@ -19,6 +19,7 @@ import { CreateForgetPasswordDto } from "./dto/create-forget-password.dto";
 import { ConfirmForgetPaswordDto } from "./dto/confirm-forget-password.dto";
 import { checkUniqueFields } from "src/common/utils/user.utils";
 import { generateNumber } from "src/common/utils/number.utils";
+import { Nationality } from "src/common/enums/nationality.enum";
 
 @Injectable()
 export class AuthService {
@@ -69,15 +70,18 @@ export class AuthService {
         const user = this.userRepo.create({
             email: params.email,
             password: hashedPassword,
+            phonePrefix: params.phonePrefix,
             phone: params.phone,
             idSerialNumber: params.idSerialNumber,
+            idSerialPrefix: params.idSerialPrefix,
             idFinCode: params.idFinCode,
+            userType: params.userType,
             customerNumber: generateNumber(),
-            loginDate: new Date(),
             voen: params.voen,
             profile: {
                 firstName: params.firstName,
                 lastName: params.lastName,
+                nationality: params.nationality,
                 gender: params.gender,
                 birthDate: params.birthDate,
                 address: params.address,

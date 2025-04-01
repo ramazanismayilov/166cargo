@@ -11,7 +11,7 @@ export class NewsEntity {
         name: 'imageId',
         referencedColumnName: 'id',
     })
-    image: ImageEntity | null;
+    image: ImageEntity;
 
     @Column()
     title: string;

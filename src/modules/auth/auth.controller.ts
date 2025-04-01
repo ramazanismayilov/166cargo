@@ -23,7 +23,7 @@ export class AuthController {
     }
 
     @Post('logout')
-    @Auth(UserRole.ADMIN, UserRole.USER)
+    @Auth()
     logOut() {
         return this.authService.logOut()
     }

@@ -20,6 +20,7 @@ import { GeneralModule } from './modules/general/general.module';
 import { CategoryModule } from './modules/category/category.module';
 import { StoreModule } from './modules/store/store.module';
 import { OrderModule } from './modules/order/order.module';
+import { AcceptLanguageResolver, HeaderResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
 
 @Module({
   imports: [
@@ -88,6 +89,21 @@ import { OrderModule } from './modules/order/order.module';
           },
         };
       },
+    }),
+    I18nModule.forRootAsync({
+      useFactory: () => ({
+        fallbackLanguage: 'en',
+        loaderOptions: {
+          path: join(__dirname, '/common/i18n/'),
+          watch: true,
+        },
+        resolvers: [
+          new QueryResolver(['lang', 'language']),
+          new AcceptLanguageResolver(),
+        ],
+        typesOutputPath: join(__dirname, '../src/generated/i18n.generated.ts'),
+      }),
+      resolvers: [new HeaderResolver(['x-custom-lang'])],
     }),
     AuthModule,
     UserModule,

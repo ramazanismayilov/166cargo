@@ -9,6 +9,10 @@
       {
         "include": "templates/*",
         "watchAssets": true
+      },
+      {
+        "include": "i18n/*",
+        "watchAssets": true
       }
     ]
   }

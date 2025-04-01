@@ -14,6 +14,7 @@ export class UploadController {
   constructor(private uploadService: UploadService) { }
 
   @Get('images')
+  @Auth(UserRole.ADMIN)
   allImages() {
     return this.uploadService.allImages()
   }

@@ -10,7 +10,7 @@ export class TariffController {
 
     @Get()
     allTariffs() {
-        return this.tariffService.allTaariffs()
+        return this.tariffService.allTariffs()
     }
 
     @Post()

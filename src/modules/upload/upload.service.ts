@@ -1,5 +1,6 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectDataSource } from "@nestjs/typeorm";
+import { isUUID } from "class-validator";
 import { ImageEntity } from "src/entities/Image.entity";
 import { CloudinaryService } from "src/libs/cloudinary/cloudinary.service";
 import { DataSource, Repository } from "typeorm";
@@ -16,7 +17,10 @@ export class UploadService {
     }
 
     async allImages() {
-        return await this.imageRepo.find();
+        const images = await this.imageRepo.find({ order: { id: 'ASC' } })
+        if (images.length === 0) throw new NotFoundException('Images not found');
+
+        return images
     }
 
     async uploadImage(file: Express.Multer.File) {
@@ -37,10 +41,16 @@ export class UploadService {
     }
 
     async deleteImage(id: string) {
+        if (!isUUID(id)) {
+            throw new BadRequestException('Image id type is wrong');
+        }
+    
         const image = await this.imageRepo.findOne({ where: { id } });
-        if (!image) throw new Error('Image not found');
-
+        if (!image) {
+            throw new NotFoundException('Image not found');
+        }
+    
         await this.imageRepo.remove(image);
-        return { message: "Image deleted succesfully" }
+        return { message: "Image deleted successfully" };
     }
 }

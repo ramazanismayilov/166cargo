@@ -8,7 +8,7 @@ export class OrderEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => UserEntity, (user) => user.orders)
+    @ManyToOne(() => UserEntity, (user) => user.orders, { cascade: true })
     user: UserEntity;
 
     @OneToMany(() => OrderItemEntity, (orderItem) => orderItem.order, { cascade: true })

@@ -10,7 +10,7 @@ export class NewsController {
     constructor(private newsService: NewsService) { }
 
     @Get()
-    allStations() {
+    allNews() {
         return this.newsService.allNews()
     }
 
@@ -25,7 +25,7 @@ export class NewsController {
     updateNews(@Param('id') id: number, @Body() body: UpdateNewsDto) {
         return this.newsService.updateNews(id, body)
     }
- 
+
     @Delete(':id')
     @Auth(UserRole.ADMIN)
     deleteNews(@Param('id') id: number) {

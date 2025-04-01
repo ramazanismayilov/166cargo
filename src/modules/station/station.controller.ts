@@ -5,7 +5,7 @@ import { UpdateStationDto } from "./dto/updateStation.dto";
 import { Auth } from "src/common/decorators/auth.decorator";
 import { UserRole } from "src/common/enums/user.enum";
 
-@Controller('station')
+@Controller('stations')
 export class StationController {
     constructor(private stationService: StationService) { }
 

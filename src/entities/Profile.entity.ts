@@ -31,7 +31,7 @@ export class ProfileEntity {
     birthDate: Date
 
     @Column({ type: 'enum', enum: Nationality, default: Nationality.AZERBAIJAN })
-    nationality: Nationality.AZERBAIJAN
+    nationality: Nationality
 
     @Column()
     address: string
@@ -44,9 +44,6 @@ export class ProfileEntity {
 
     @Column({ type: 'float', default: 0 })
     balance: number
-
-    @Column({ type: 'int', default: 0 })
-    bundleCount: number
 
     @OneToOne(() => UserEntity, (user) => user.profile, { onDelete: 'CASCADE' })
     @JoinColumn({

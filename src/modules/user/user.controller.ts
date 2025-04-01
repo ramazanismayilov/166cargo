@@ -11,7 +11,7 @@ export class UserController {
 
     @Get()
     @Auth(UserRole.ADMIN)
-    getUses() {
+    getUsers() {
         return this.userService.getUsers()
     }
 
@@ -22,19 +22,19 @@ export class UserController {
     }
 
     @Delete(':id')
-    @Auth(UserRole.ADMIN, UserRole.USER)
+    @Auth()
     async deleteUser(@Param('id') id: number) {
         return this.userService.deleteUser(id);
     }
 
     @Post('profile')
-    @Auth(UserRole.ADMIN, UserRole.USER)
+    @Auth()
     async updateProfile(@Body() body: ProfileUpdateDto) {
         return this.userService.updateProfile(body);
     }
 
     @Post('increaseBalance')
-    @Auth(UserRole.ADMIN, UserRole.USER)
+    @Auth()
     async increaseBalance(@Body() body: IncreaseBalanceDto) {
         return this.userService.increaseBalance(body);
     }

@@ -45,9 +45,6 @@ export class UserEntity {
     @Column({ default: false })
     logout: boolean
 
-    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-    loginDate: Date
-
     @Column({ type: 'enum', enum: UserType, default: UserType.INDIVIDUAL })
     userType: UserType;
 
@@ -60,7 +57,7 @@ export class UserEntity {
     @OneToOne(() => ProfileEntity, (profile) => profile.user, { cascade: true })
     profile: ProfileEntity;
 
-    @OneToMany(() => OrderEntity, (order) => order.user)
+    @OneToMany(() => OrderEntity, (order) => order.user, { onDelete: 'CASCADE' })
     orders: OrderEntity[];
 
     @CreateDateColumn()
