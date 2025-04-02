@@ -55,7 +55,7 @@ export class UserUtils {
         }
     }
 
-    validateNationality(nationality: Nationality, idSerialPrefix: string) {
+    validateNationality(nationality?: Nationality, idSerialPrefix?: string) {
         const lang = this.cls.get('lang');
         if (nationality === Nationality.AZERBAIJAN) {
             if (idSerialPrefix !== IdSerialPrefix.AA && idSerialPrefix !== IdSerialPrefix.AZE) {

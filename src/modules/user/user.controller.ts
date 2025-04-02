@@ -28,7 +28,7 @@ export class UserController {
     }
 
     @Post('profile')
-    @Auth()
+    @Auth(UserRole.ADMIN, UserRole.USER)
     async updateProfile(@Body() body: ProfileUpdateDto) {
         return this.userService.updateProfile(body);
     }

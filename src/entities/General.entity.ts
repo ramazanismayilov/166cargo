@@ -14,6 +14,19 @@ export class GeneralEntity {
     logo: ImageEntity | null;
 
     @Column()
+    title: string;
+
+    @Column()
+    description: string;
+
+    @OneToOne(() => ImageEntity, { onDelete: 'SET NULL' })
+    @JoinColumn({
+        name: 'imageId',
+        referencedColumnName: 'id',
+    })
+    image: ImageEntity | null;
+
+    @Column()
     sitename: string;
 
     @Column()

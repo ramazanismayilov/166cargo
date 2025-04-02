@@ -29,29 +29,41 @@ export class GeneralService {
         const logo = params.logoId
             ? await this.imageRepo.findOne({ where: { id: params.logoId } })
             : null;
-        if (params.logoId && !logo) throw new NotFoundException({ message: 'Image not found' });
+        if (params.logoId && !logo) throw new NotFoundException({ message: 'Logo not found' });
 
-        const general = this.generalRepo.create({ ...params, logo })
+        const image = params.imageId
+            ? await this.imageRepo.findOne({ where: { id: params.imageId } })
+            : null;
+        if (params.imageId && !image) throw new NotFoundException({ message: 'Image not found' });
+
+        const general = this.generalRepo.create({ ...params, logo, image });
         await this.generalRepo.save(general);
+
         return { message: "General created successfully", general };
     }
 
     async updateGeneral(id: number, params: UpdateGeneralDto) {
-        const generals = await this.generalRepo.findOne({ where: { id }, relations: ['logo'] });
-        if (!generals) throw new NotFoundException({ message: 'Generals not found' });
+        const generals = await this.generalRepo.findOne({ where: { id }, relations: ['logo', 'image'] });
+        if (!generals) throw new NotFoundException({ message: 'General not found' });
 
         const logo = params.logoId
             ? await this.imageRepo.findOne({ where: { id: params.logoId } })
             : generals.logo;
-        if (params.logoId && !logo) throw new NotFoundException({ message: 'Image not found' });
+        if (params.logoId && !logo) throw new NotFoundException({ message: 'Logo not found' });
+
+        const image = params.imageId
+            ? await this.imageRepo.findOne({ where: { id: params.imageId } })
+            : generals.image;
+        if (params.imageId && !image) throw new NotFoundException({ message: 'Image not found' });
 
         await this.generalRepo.save({
             ...generals,
             ...params,
             logo: logo !== null ? logo : generals.logo,
+            image: image !== null ? image : generals.image,
         });
 
-        const updatedGeneral = await this.generalRepo.findOne({ where: { id }, relations: ['logo'] });
+        const updatedGeneral = await this.generalRepo.findOne({ where: { id }, relations: ['logo', 'image'] });
         return { message: "General updated successfully", updatedGeneral };
     }
 

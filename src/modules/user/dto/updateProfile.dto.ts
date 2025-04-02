@@ -43,10 +43,10 @@ export class  ProfileUpdateDto{
     @IsOptional()
     idSerialNumber?: string
 
-    @Type()
-    @IsNumber()
-    @IsOptional()
-    stationId?: number
+    // @Type()
+    // @IsNumber()
+    // @IsOptional()
+    // stationId?: number
 
     @Type()
     @IsString()

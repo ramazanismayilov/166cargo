@@ -11,6 +11,22 @@ export class AddGeneralDto {
     @Type()
     @IsString()
     @IsNotEmpty()
+    @IsUUID('4', { each: true })
+    imageId: string;
+
+    @Type()
+    @IsString()
+    @IsNotEmpty()
+    title: string;
+
+    @Type()
+    @IsString()
+    @IsNotEmpty()
+    description: string;
+
+    @Type()
+    @IsString()
+    @IsNotEmpty()
     sitename: string;
 
     @Type()

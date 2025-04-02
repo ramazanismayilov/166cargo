@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
+import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectDataSource } from "@nestjs/typeorm";
 import { ClsService } from "nestjs-cls";
 import { UserRole } from "src/common/enums/user.enum";
@@ -58,38 +58,34 @@ export class UserService {
     }
 
     async updateProfile(params: ProfileUpdateDto) {
-        const { phone, idSerialNumber, nationality, idSerialPrefix } = params;
-        const user = this.cls.get<UserEntity>('user');
+        const user = this.cls.get<UserEntity>("user");
+        this.userUtils.checkUniqueFields(this.userRepo, params);
+        this.userUtils.validateUserType(user.userType, params.voen);
+        this.userUtils.validateNationality(params.nationality, params.idSerialPrefix);
 
-        const station = await this.stationRepo.findOne({ where: { id: params.stationId } });
-        if (!station) throw new NotFoundException('Station not found');
+        // const station = await this.stationRepo.findOne({ where: { id: params.stationId } });
+        // if (!station) throw new NotFoundException("Station not found");
 
-        if (nationality && idSerialPrefix) {
-            this.userUtils.validateNationality(nationality, idSerialPrefix);
+        if (user.profile) {
+            await this.profileRepo.update(user.profile.id, {
+                gender: params.gender || user.profile.gender,
+                birthDate: params.birthDate || user.profile.birthDate,
+                nationality: params.nationality || user.profile.nationality,
+                address: params.address || user.profile.address,
+                // station: params.stationId || user.profile.station,
+            });
         }
 
-        if (phone || idSerialNumber) {
-            await this.userUtils.checkUniqueFields(this.userRepo, { phone, idSerialNumber });
-        }
-
-        // Update the profile first
-        await this.profileRepo.update(user.profile.id, {
-            gender: params.gender,
-            birthDate: params.birthDate,
-            address: params.address,
-        });
-
-        // Update the user details
         await this.userRepo.update(user.id, {
-            phone: params.phone,
-            idSerialNumber: params.idSerialNumber,
-            voen: params.voen,
+            phonePrefix: params.phonePrefix || user.phonePrefix,
+            phone: params.phone || user.phone,
+            idSerialPrefix: params.idSerialPrefix || user.idSerialPrefix,
+            idSerialNumber: params.idSerialNumber || user.idSerialNumber,
+            voen: params.voen || user.voen,
         });
 
-        // Fetch the updated user data
-        const updatedUser = await this.userRepo.findOne({ where: { id: user.id }, relations: ['profile', 'station'] });
-
-        return { message: 'Profile is updated successfully', updatedUser };
+        const updatedUser = await this.userRepo.findOne({ where: { id: user.id }, relations: ['profile'] });
+        return { message: "Profile updated successfully", updatedUser };
     }
 
     async increaseBalance(params: IncreaseBalanceDto) {
