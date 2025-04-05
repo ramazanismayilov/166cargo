@@ -4,6 +4,8 @@ import { TariffEntity } from "src/entities/Tariff.entity";
 import { DataSource, Repository } from "typeorm";
 import { AddTariffDto } from "./dto/addTariff.dto";
 import { TariffCountry } from "src/common/enums/tariffCountry.enum";
+import { roundToDecimal } from "src/common/utils/number.utils";
+import { calculateTariff } from "src/common/utils/tariff.utils";
 
 @Injectable()
 export class TariffService {
@@ -22,63 +24,21 @@ export class TariffService {
     }
 
     async addTariff(params: AddTariffDto) {
-        const { width, height, length, country, weightRangeStart, weightRangeEnd, priceUSD, priceGBP } = params;
-        let weightStart = weightRangeStart;
-        let weightEnd = weightRangeEnd;
-        let volumetricWeight = 0;
-        let countryTariff = 0;
-        let calculatedPriceUSD = priceUSD;
-        let calculatedPriceGBP = priceGBP;
-        let calculatedPriceLocal = 0;
-        const exchangeRateUSD = 1.70;
-        const exchangeRateGBP = 2.50;
-
-        if (width >= 60 || height >= 60 || length >= 60) {
-            volumetricWeight = (width * height * length) / 6000;
-
-            switch (country) {
-                case TariffCountry.TURKEY:
-                    countryTariff = 0.66;
-                    calculatedPriceUSD = volumetricWeight * countryTariff;
-                    calculatedPriceGBP = 0;
-                    calculatedPriceLocal = calculatedPriceUSD * exchangeRateUSD;
-                    break;
-                case TariffCountry.ENGLAND:
-                    countryTariff = 2.90;
-                    calculatedPriceGBP = volumetricWeight * countryTariff;
-                    calculatedPriceUSD = 0;
-                    calculatedPriceLocal = calculatedPriceGBP * exchangeRateGBP;
-                    break;
-                case TariffCountry.USA:
-                    countryTariff = 2.66;
-                    calculatedPriceUSD = volumetricWeight * countryTariff;
-                    calculatedPriceGBP = 0;
-                    calculatedPriceLocal = calculatedPriceUSD * exchangeRateUSD;
-                    break;
-            }
-
-            weightStart = volumetricWeight;
-            weightEnd = volumetricWeight + 0.250;
-        } else {
-            switch (country) {
-                case TariffCountry.TURKEY:
-                    calculatedPriceLocal = priceUSD * exchangeRateUSD;
-                    break;
-                case TariffCountry.ENGLAND:
-                    calculatedPriceLocal = priceGBP * exchangeRateGBP;
-                    break;
-                case TariffCountry.USA:
-                    calculatedPriceLocal = priceUSD * exchangeRateUSD;
-                    break;
-            }
-        }
+        const { weight, width, height, length, country } = params;
+        const { priceUSD, priceGBP, priceLocal } = calculateTariff({
+            weight,
+            width,
+            height,
+            length,
+            country
+        });
 
         const tariff = this.tariffRepo.create({
-            weightRangeStart: weightStart,
-            weightRangeEnd: weightEnd,
-            priceUSD: calculatedPriceUSD,
-            priceGBP: calculatedPriceGBP,
-            priceLocal: calculatedPriceLocal,
+            weightRangeStart: weight,
+            weightRangeEnd: weight,
+            priceUSD: roundToDecimal(priceUSD),
+            priceGBP: roundToDecimal(priceGBP),
+            priceLocal: roundToDecimal(priceLocal),
             width,
             height,
             length,
@@ -88,7 +48,7 @@ export class TariffService {
         await this.tariffRepo.save(tariff);
 
         return {
-            message: 'Tariff created successfully',
+            message: 'Tarif uğurla yaradıldı',
             tariff,
         };
     }

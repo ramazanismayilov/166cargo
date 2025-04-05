@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsString, IsNumber, Min, Max, IsNotEmpty, IsEnum } from "class-validator";
+import { IsString, IsNumber, IsNotEmpty, IsEnum } from "class-validator";
 import { TariffCountry } from "src/common/enums/tariffCountry.enum";
 
 export class AddTariffDto {
@@ -8,6 +8,11 @@ export class AddTariffDto {
     @IsEnum(TariffCountry)
     @IsNotEmpty()
     country: TariffCountry;
+
+    @Type()
+    @IsNumber()
+    @IsNotEmpty()
+    weight: number;
 
     @Type()
     @IsNumber()
@@ -23,24 +28,4 @@ export class AddTariffDto {
     @IsNumber()
     @IsNotEmpty()
     length: number;
-
-    @Type()
-    @IsNumber()
-    @IsNotEmpty()
-    weightRangeStart: number;
-
-    @Type()
-    @IsNumber()
-    @IsNotEmpty()
-    weightRangeEnd: number;
-
-    @Type()
-    @IsNumber()
-    @IsNotEmpty()
-    priceUSD: number;
-
-    @Type()
-    @IsNumber()
-    @IsNotEmpty()
-    priceGBP: number;
 }
