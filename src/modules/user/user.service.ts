@@ -59,12 +59,9 @@ export class UserService {
 
     async updateProfile(params: ProfileUpdateDto) {
         const user = this.cls.get<UserEntity>("user");
-        this.userUtils.checkUniqueFields(this.userRepo, params);
-        this.userUtils.validateUserType(user.userType, params.voen);
+       await this.userUtils.checkUniqueFields(this.userRepo, params);
+        this.userUtils.validateUserType(params.userType, params.voen);
         this.userUtils.validateNationality(params.nationality, params.idSerialPrefix);
-
-        // const station = await this.stationRepo.findOne({ where: { id: params.stationId } });
-        // if (!station) throw new NotFoundException("Station not found");
 
         if (user.profile) {
             await this.profileRepo.update(user.profile.id, {
@@ -72,7 +69,6 @@ export class UserService {
                 birthDate: params.birthDate || user.profile.birthDate,
                 nationality: params.nationality || user.profile.nationality,
                 address: params.address || user.profile.address,
-                // station: params.stationId || user.profile.station,
             });
         }
 

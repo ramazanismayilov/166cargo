@@ -4,8 +4,9 @@ import { Gender } from "src/common/enums/gender.enum";
 import { IdSerialPrefix } from "src/common/enums/idSerialNumber.enum";
 import { Nationality } from "src/common/enums/nationality.enum";
 import { PhonePrefix } from "src/common/enums/phone.enum";
+import { UserType } from "src/common/enums/user.enum";
 
-export class  ProfileUpdateDto{
+export class ProfileUpdateDto {
     @Type()
     @IsEnum(PhonePrefix)
     @IsOptional()
@@ -33,6 +34,11 @@ export class  ProfileUpdateDto{
     nationality?: Nationality
 
     @Type()
+    @IsEnum(UserType)
+    @IsOptional()
+    userType: UserType
+
+    @Type()
     @IsEnum(IdSerialPrefix)
     @IsOptional()
     idSerialPrefix?: IdSerialPrefix
@@ -42,11 +48,6 @@ export class  ProfileUpdateDto{
     @Length(7, 7)
     @IsOptional()
     idSerialNumber?: string
-
-    // @Type()
-    // @IsNumber()
-    // @IsOptional()
-    // stationId?: number
 
     @Type()
     @IsString()
