@@ -10,6 +10,7 @@ export class StationController {
     constructor(private stationService: StationService) { }
 
     @Get()
+    @Auth(UserRole.ADMIN)
     allStations() {
         return this.stationService.allStations()
     }

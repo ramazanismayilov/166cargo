@@ -1,0 +1,90 @@
+<html lang='en'>
+
+  <head>
+    <meta charset='UTF-8' />
+    <title>Verify Your Email</title>
+    <style>
+      body {
+        font-family: 'Arial', sans-serif;
+        color: #ffffff;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+      }
+
+      .email-container {
+        max-width: 500px;
+        margin: 50px auto;
+        background-color: #ffffff;
+        border-radius: 10px;
+        padding: 40px;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      h2 {
+        color: #ffd700;
+        font-size: 28px;
+        margin-bottom: 15px;
+      }
+
+      p {
+        font-size: 16px;
+        color: #000;
+        line-height: 1.6;
+        margin: 15px 0;
+      }
+
+      .otp-code {
+        display: inline-block;
+        font-size: 36px;
+        font-weight: bold;
+        background-color: #ffd700;
+        color: #000000;
+        padding: 16px 32px;
+        border-radius: 8px;
+        letter-spacing: 5px;
+        margin: 20px 0;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .footer {
+        margin-top: 30px;
+        font-size: 14px;
+        color: #000;
+        text-align: center;
+      }
+
+      .footer a {
+        color: #ffd700;
+        text-decoration: none;
+      }
+
+      .footer a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class='email-container'>
+      <div class='logo'>
+        <img
+          src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPd_yiCk-6pd8mVt5N3Es2ZxffypF9JjNeqA&s'
+          alt='Company Logo'
+          width='150'
+        />
+      </div>
+      <h2>Verify Your Email</h2>
+      <p>Hello <strong>{{firstName}}</strong>,</p>
+      <p>Use the code below to verify your email address:</p>
+      <div class='otp-code'>{{otpCode}}</div>
+      <p>This code will expire in 10 minutes.</p>
+      <div class='footer'>
+        Best regards,
+        <span style='color:#FFD700;'>166 Cargo!</span>
+      </div>
+    </div>
+  </body>
+
+</html>

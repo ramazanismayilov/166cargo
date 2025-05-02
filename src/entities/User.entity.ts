@@ -43,7 +43,19 @@ export class UserEntity {
     customerNumber: number
 
     @Column({ default: false })
-    logout: boolean
+    isVerified: boolean
+
+    @Column({ type: 'int', nullable: true })
+    otpCode?: number | null;
+
+    @Column({ type: 'timestamp', nullable: true })
+    otpExpiredAt?: Date | null;
+
+    @Column({ type: 'varchar', nullable: true })
+    refreshToken: string | null;
+    
+    @Column({ type: 'timestamp', nullable: true })
+    refreshTokenDate: Date | null;
 
     @Column({ type: 'enum', enum: UserType, default: UserType.INDIVIDUAL })
     userType: UserType;

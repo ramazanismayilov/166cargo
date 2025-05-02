@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from "@nestjs/common";
+import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { InjectDataSource } from "@nestjs/typeorm";
 import { UserEntity } from "src/entities/User.entity";
 import { DataSource, MoreThan, Repository } from "typeorm";
@@ -17,8 +17,11 @@ import { addMinutes } from "date-fns";
 import { CreateForgetPasswordDto } from "./dto/create-forget-password.dto";
 import { ConfirmForgetPaswordDto } from "./dto/confirm-forget-password.dto";
 import { UserUtils } from "src/common/utils/user.utils";
-import { generateNumber } from "src/common/utils/number.utils";
+import { generateNumber, generateOtpExpireDate, generateOtpNumber } from "src/common/utils/number.utils";
 import { I18nService } from "nestjs-i18n";
+import { VerifyOtpDto } from "./dto/verify.dto";
+import { ResentOtpDto } from "./dto/resent-otp.dto";
+import { RefreshTokenDto } from "./dto/refreshToken.dto";
 
 @Injectable()
 export class AuthService {
@@ -45,17 +48,20 @@ export class AuthService {
         let user = await this.userRepo.findOne({ where: { email: params.email } });
         if (!user) throw new UnauthorizedException(this.i18n.t('auth.username_or_password_wrong', { lang }));
 
-        if (user.logout) {
-            user.logout = false;
-            await this.userRepo.save(user);
-        }
+        if (!user.isVerified) throw new ForbiddenException(this.i18n.t('auth.account_not_verified', { lang }));
 
         let checkPassword = await compare(params.password, user.password);
         if (!checkPassword) throw new UnauthorizedException(this.i18n.t('auth.username_or_password_wrong', { lang }));
 
-        let token = this.jwt.sign({ userId: user.id });
+        let accessToken = this.jwt.sign({ userId: user.id }, { expiresIn: '15m' });
+        const refreshToken = v4()
+        const refreshTokenDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
-        return { message: this.i18n.t('auth.login_success_message', { lang }), token };
+        user.refreshToken = refreshToken;
+        user.refreshTokenDate = refreshTokenDate;
+        await this.userRepo.save(user);
+
+        return { message: this.i18n.t('auth.login_success_message', { lang }), token: { accessToken, refreshToken } };
     }
 
     async register(params: RegisterDto) {
@@ -82,6 +88,9 @@ export class AuthService {
             userType: params.userType,
             customerNumber: generateNumber(),
             voen: params.voen,
+            isVerified: false,
+            otpCode: generateOtpNumber(),
+            otpExpiredAt: generateOtpExpireDate(),
             profile: {
                 firstName: params.firstName,
                 lastName: params.lastName,
@@ -98,26 +107,60 @@ export class AuthService {
         if (params.email) {
             await this.mailer.sendMail({
                 to: params.email,
-                subject: 'Welcome to 166 Cargo!',
-                template: 'welcome',
+                subject: 'Verify Your Email – 166 Cargo!',
+                template: 'verify-email',
                 context: {
+                    otpCode: user.otpCode,
                     firstName: user.profile.firstName,
                 },
             });
         }
-        return { message: this.i18n.t('auth.register_success_message', { lang }), user };
+        return { message: this.i18n.t('auth.otp_sent_email', { lang }) };
     }
 
-    async logOut() {
-        const lang = this.cls.get('lang');
-        let user = this.cls.get<UserEntity>('user')
-        if (user && user.logout === false) {
-            user.logout = true
-            await this.userRepo.update(user.id, { logout: true });
-            return { message: this.i18n.t('auth.logout_success_message', { lang }) };
-        }
+    async verifyOtp(params: VerifyOtpDto) {
+        const user = await this.userRepo.findOne({ where: { email: params.email } })
+        if (!user) throw new NotFoundException('User not found')
+        if (user.isVerified) throw new BadRequestException('Account is already active');
 
-        return { message: this.i18n.t('auth.logout_already_message', { lang }) };
+        if (user.otpCode !== params.otpCode || !user.otpExpiredAt || new Date() > user.otpExpiredAt) throw new BadRequestException('OTP is incorrect or expired.');
+        user.isVerified = true;
+        user.otpCode = null;
+        user.otpExpiredAt = null;
+
+        await this.userRepo.save(user);
+        return { message: 'Account successfully activated' };
+    }
+
+    async resendOtp(params: ResentOtpDto) {
+        const user = await this.userRepo.findOne({ where: { email: params.email }, relations: ['profile'] });
+        if (!user) throw new NotFoundException('User not found');
+        if (user.isVerified) throw new BadRequestException('Account is already verified');
+
+        user.otpCode = generateOtpNumber();
+        user.otpExpiredAt = generateOtpExpireDate();
+
+        await this.userRepo.save(user);
+
+        await this.mailer.sendMail({
+            to: params.email,
+            subject: 'Verify Your Email – Epic Games!',
+            template: 'verify-email',
+            context: {
+                otpCode: user.otpCode,
+                firstName: user.profile.firstName,
+            },
+        });
+
+        return { message: 'OTP has been resent to your email.' };
+    }
+
+    async refreshToken(params: RefreshTokenDto) {
+        const user = await this.userRepo.findOne({ where: { refreshToken: params.refreshToken } });
+        if (!user) throw new UnauthorizedException('User not found');
+
+        const accessToken = this.jwt.sign({ userId: user.id }, { expiresIn: '15m' });
+        return { accessToken };
     }
 
     async resetPassword(params: ResetPasswordDto) {

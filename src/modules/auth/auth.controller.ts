@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, Get, Post } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
@@ -7,6 +7,9 @@ import { Auth } from "src/common/decorators/auth.decorator";
 import { CreateForgetPasswordDto } from "./dto/create-forget-password.dto";
 import { ConfirmForgetPaswordDto } from "./dto/confirm-forget-password.dto";
 import { UserRole } from "src/common/enums/user.enum";
+import { VerifyOtpDto } from "./dto/verify.dto";
+import { ResentOtpDto } from "./dto/resent-otp.dto";
+import { RefreshTokenDto } from "./dto/refreshToken.dto";
 
 @Controller('auth')
 export class AuthController {
@@ -22,10 +25,19 @@ export class AuthController {
         return this.authService.register(body)
     }
 
-    @Post('logout')
-    @Auth(UserRole.ADMIN, UserRole.USER)
-    logOut() {
-        return this.authService.logOut()
+    @Post('verifyOtp')
+    verifyOtp(@Body() body: VerifyOtpDto) {
+        return this.authService.verifyOtp(body)
+    }
+
+    @Post('resentOtp')
+    resendOtp(@Body() body: ResentOtpDto) {
+        return this.authService.resendOtp(body)
+    }
+
+    @Post('refresh-token')
+    async refreshToken(@Body() body: RefreshTokenDto) {
+        return this.authService.refreshToken(body);
     }
 
     @Post('reset-password')

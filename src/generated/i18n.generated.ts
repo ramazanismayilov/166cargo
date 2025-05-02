@@ -26,6 +26,8 @@ export type I18nTranslations = {
         "mail_sent_success_message": string;
         "mail_sent_error_message": string;
         "token_invalid": string;
+        "otp_sent_email": string;
+        "account_not_verified": string;
     };
     "station": {
         "not_found": string;
