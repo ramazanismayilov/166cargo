@@ -14,6 +14,11 @@ export class StoreController {
         return this.storeService.allStores()
     }
 
+    @Get(':id')
+    getCategoriesByStoreId(@Param('id') id: number) {
+        return this.storeService.getCategoriesByStoreId(id)
+    }
+
     @Post()
     @Auth(UserRole.ADMIN)
     addStore(@Body() body: AddStoreDto) {

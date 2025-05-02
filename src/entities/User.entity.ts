@@ -21,6 +21,9 @@ export class UserEntity {
     @Column({ unique: true })
     email: string
 
+    @Column({ unique: true, nullable: true, type: 'varchar' })
+    pendingEmail?: string | null
+
     @Column()
     password: string
 

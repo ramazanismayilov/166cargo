@@ -159,7 +159,7 @@ export class OrderService {
             [OrderStatus.INTRANSIT]: [OrderStatus.READYFORPICKUP, OrderStatus.CANCELED],
             [OrderStatus.READYFORPICKUP]: [OrderStatus.DELIVERED, OrderStatus.CANCELED],
             [OrderStatus.DELIVERED]: [],
-            [OrderStatus.CANCELED]: [OrderStatus.PENDING, OrderStatus.SHIPPED, OrderStatus.INTRANSIT, OrderStatus.READYFORPICKUP, OrderStatus.DELIVERED],
+            [OrderStatus.CANCELED]: [OrderStatus.PENDING],
         };
 
         if (!validTransitions[currentStatus].includes(newStatus)) {

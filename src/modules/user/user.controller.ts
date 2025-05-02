@@ -4,6 +4,8 @@ import { Auth } from "src/common/decorators/auth.decorator";
 import { UserRole } from "src/common/enums/user.enum";
 import { ProfileUpdateDto } from "./dto/updateProfile.dto";
 import { IncreaseBalanceDto } from "./dto/increaseBalance.dto";
+import { EmailUpdateDto } from "./dto/updateEmail.dto";
+import { VerifyNewEmailDto } from "./dto/verifyNewEmail.dto";
 
 @Controller('users')
 export class UserController {
@@ -33,8 +35,20 @@ export class UserController {
         return this.userService.updateProfile(body);
     }
 
+    @Post('updateEmail')
+    @Auth(UserRole.ADMIN, UserRole.USER)
+    async updateEmail(@Body() body: EmailUpdateDto) {
+        return this.userService.updateEmail(body);
+    }
+
+    @Post('verifyNewEmail')
+    @Auth(UserRole.ADMIN, UserRole.USER)
+    async verifyNewEmail(@Body() body: VerifyNewEmailDto) {
+        return this.userService.verifyNewEmail(body);
+    }
+
     @Post('increaseBalance')
-    @Auth()
+    @Auth(UserRole.ADMIN, UserRole.USER)
     async increaseBalance(@Body() body: IncreaseBalanceDto) {
         return this.userService.increaseBalance(body);
     }
